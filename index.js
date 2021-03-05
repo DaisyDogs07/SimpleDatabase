@@ -43,7 +43,6 @@ class Database extends EventEmitter {
         recursive: true
       });
     const filePath = `${path.resolve(dir)}/${location}.json`;
-    console.log(filePath);
     if (!fs.existsSync(filePath))
       fs.closeSync(fs.openSync(filePath, 'w'));
     /**
@@ -79,48 +78,6 @@ class Database extends EventEmitter {
     return this;
   }
   /**
-   * Gets the specified JSON key's value
-   * @param {string} Path The path to the JSON key
-   * @returns {string | number | object} The JSON value of the JSON key
-   */
-  get(path) {
-    if (!path)
-      return this.read();
-    if (typeof path !== 'string')
-      return newErr(this, 'Path must be a string');
-    if (!isNaN(Number(path.charAt(0))))
-      return newErr(this, 'Path cannot start with a number');
-    path = path.replace(/ /g, '').trim();
-    let result = this._get(path, this.read());
-    return result ? result : undefined;
-  }
-  /**
-   * Sets a JSON value to the new value
-   * @param {string} Path the path to the JSON key (Required)
-   * @param {number} Value The value to set (Required)
-   * @returns {Database} A reference to the Database
-   */
-  set(path, value = '') {
-    if (!path)
-      return newErr(this, 'Missing JSON path');
-    if (typeof path !== 'string')
-      return newErr(this, 'Path must be a string');
-    if (!isNaN(Number(path.charAt(0))))
-      return newErr(this, 'Path cannot start with a number');
-    if (typeof value === 'function')
-      return newErr(this, 'Value cannot be a function');
-    path = path.replace(/ /g, '').trim();
-    let data = this._set(path, value, this.read());
-    if (eval(`this.read().${path}`) === value)
-      return this;
-    this.emit('change', path, this.read(), data);
-    fs.truncateSync(this.FilePath);
-    fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces), {
-      encoding: 'utf-8'
-    });
-    return this;
-  }
-  /**
    * Subtracts a specified amount to the JSON value
    * @param {string} Path The path to the JSON key (Required)
    * @param {number} Value The amount to subtract. Defaults to 1
@@ -141,6 +98,48 @@ class Database extends EventEmitter {
       data -= Number(value);
     else data = Number(value);
     this.set(path, data);
+    return this;
+  }
+  /**
+   * Gets the specified JSON key's value
+   * @param {string} Path The path to the JSON key
+   * @returns {string | number | object} The JSON value of the JSON key
+   */
+  get(path) {
+    if (!path)
+      return this.read();
+    if (typeof path !== 'string')
+      return newErr(this, 'Path must be a string');
+    if (!isNaN(Number(path.charAt(0))))
+      return newErr(this, 'Path cannot start with a number');
+    path = path.replace(/ /g, '').trim();
+    let result = _get(path, this.read());
+    return result ? result : undefined;
+  }
+  /**
+   * Sets a JSON value to the new value
+   * @param {string} Path the path to the JSON key (Required)
+   * @param {number} Value The value to set (Required)
+   * @returns {Database} A reference to the Database
+   */
+  set(path, value = '') {
+    if (!path)
+      return newErr(this, 'Missing JSON path');
+    if (typeof path !== 'string')
+      return newErr(this, 'Path must be a string');
+    if (!isNaN(Number(path.charAt(0))))
+      return newErr(this, 'Path cannot start with a number');
+    if (typeof value === 'function')
+      return newErr(this, 'Value cannot be a function');
+    path = path.replace(/ /g, '').trim();
+    let data = _set(path, value, this.read());
+    if (this.get(path) === value)
+      return this;
+    this.emit('change', path, this.read(), data);
+    fs.truncateSync(this.FilePath);
+    fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces), {
+      encoding: 'utf-8'
+    });
     return this;
   }
   /**
@@ -174,30 +173,31 @@ class Database extends EventEmitter {
     let data = fs.readFileSync(this.FilePath, 'utf-8');
     return data ? JSON.parse(data) : {};
   }
-  _set(path, value, obj = undefined) {
-    if (obj === undefined)
+}
+
+function _set(path, value, obj = undefined) {
+  if (obj === undefined)
+    return undefined;
+  let locations = path.split('.'),
+    output = obj,
+    ref = obj;
+  for (let i = 0; i < locations.length - 1; i++) {
+    if (!ref[locations[i]])
+      ref = ref[locations[i]] = {};
+    else ref = ref[locations[i]];
+  }
+  ref[locations[locations.length - 1]] = value;
+  return output;
+}
+function _get(path, obj = {}) {
+  let locations = path.split('.'),
+    ref = obj;
+  for (let i = 0; i < locations.length - 1; i++) {
+    ref = ref[locations[i]] ? ref[locations[i]] : undefined;
+    if (!ref)
       return undefined;
-    let locations = path.split('.'),
-      output = obj,
-      ref = obj;
-    for (let i = 0; i < locations.length - 1; i++) {
-      if (!ref[locations[i]])
-        ref = ref[locations[i]] = {};
-      else ref = ref[locations[i]];
-    }
-    ref[locations[locations.length - 1]] = value;
-    return output;
   }
-  _get(path, obj = {}) {
-    let locations = path.split('.'),
-      ref = obj;
-    for (let i = 0; i < locations.length - 1; i++) {
-      ref = ref[locations[i]] ? ref[locations[i]] : undefined;
-      if (!ref)
-        return undefined;
-    }
-    return ref[locations[locations.length - 1]];
-  }
+  return ref[locations[locations.length - 1]];
 }
 
 module.exports = Database;
