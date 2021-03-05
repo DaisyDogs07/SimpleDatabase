@@ -1,17 +1,11 @@
-# This workflow integrates njsscan with GitHub's Code Scanning feature
-# nodejsscan is a static security code scanner that finds insecure code patterns in your Node.js applications
-
 name: njsscan sarif
-
 on:
   push:
     branches: [ master ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ master ]
   schedule:
     - cron: '19 7 * * 3'
-
 jobs:
   njsscan:
     runs-on: ubuntu-latest
