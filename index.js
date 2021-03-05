@@ -37,11 +37,13 @@ class Database extends EventEmitter {
     let dir = location.split('/');
     delete dir[dir.length - 1];
     dir = dir.join('/');
+    location = location.replace(dir, '');
     if (!fs.existsSync(dir))
       fs.mkdirSync(path.resolve(dir), {
         recursive: true
       });
     const filePath = `${path.resolve(dir)}/${location}.json`;
+    console.log(filePath);
     if (!fs.existsSync(filePath))
       fs.closeSync(fs.openSync(filePath, 'w'));
     /**
@@ -70,7 +72,9 @@ class Database extends EventEmitter {
       return newErr(this, 'Value must be a number');
     path = path.replace(/ /g, '').trim();
     let data = this.get(path);
-    typeof data === 'number' ? data += Number(value) : data = Number(value);
+    if (typeof data === 'number')
+      data += Number(value)
+    else data = Number(value);
     this.set(path, data);
     return this;
   }
@@ -87,7 +91,7 @@ class Database extends EventEmitter {
     if (!isNaN(Number(path.charAt(0))))
       return newErr(this, 'Path cannot start with a number');
     path = path.replace(/ /g, '').trim();
-    let result = _get(path, this.read());
+    let result = this._get(path, this.read());
     return result ? result : undefined;
   }
   /**
@@ -106,7 +110,7 @@ class Database extends EventEmitter {
     if (typeof value === 'function')
       return newErr(this, 'Value cannot be a function');
     path = path.replace(/ /g, '').trim();
-    let data = _set(path, value, this.read());
+    let data = this._set(path, value, this.read());
     if (eval(`this.read().${path}`) === value)
       return this;
     this.emit('change', path, this.read(), data);
@@ -133,7 +137,9 @@ class Database extends EventEmitter {
       return newErr(this, 'Value must be a number');
     path = path.replace(/ /g, '').trim();
     let data = this.get(path);
-    typeof data === 'number' ? data -= Number(value) : data = Number(value);
+    if (typeof data === 'number')
+      data -= Number(value);
+    else data = Number(value);
     this.set(path, data);
     return this;
   }
@@ -168,31 +174,30 @@ class Database extends EventEmitter {
     let data = fs.readFileSync(this.FilePath, 'utf-8');
     return data ? JSON.parse(data) : {};
   }
-}
-
-function _set(path, value, obj = undefined) {
-  if (obj === undefined)
-    return undefined;
-  let locations = path.split('.'),
-    output = obj,
-    ref = obj;
-  for (let i = 0; i < locations.length - 1; i++) {
-    if (!ref[locations[i]])
-      ref = ref[locations[i]] = {};
-    else ref = ref[locations[i]];
-  }
-  ref[locations[locations.length - 1]] = value;
-  return output;
-}
-function _get(path, obj = {}) {
-  let locations = path.split('.'),
-    ref = obj;
-  for (let i = 0; i < locations.length - 1; i++) {
-    ref = ref[locations[i]] ? ref[locations[i]] : undefined;
-    if (!ref)
+  _set(path, value, obj = undefined) {
+    if (obj === undefined)
       return undefined;
+    let locations = path.split('.'),
+      output = obj,
+      ref = obj;
+    for (let i = 0; i < locations.length - 1; i++) {
+      if (!ref[locations[i]])
+        ref = ref[locations[i]] = {};
+      else ref = ref[locations[i]];
+    }
+    ref[locations[locations.length - 1]] = value;
+    return output;
   }
-  return ref[locations[locations.length - 1]];
+  _get(path, obj = {}) {
+    let locations = path.split('.'),
+      ref = obj;
+    for (let i = 0; i < locations.length - 1; i++) {
+      ref = ref[locations[i]] ? ref[locations[i]] : undefined;
+      if (!ref)
+        return undefined;
+    }
+    return ref[locations[locations.length - 1]];
+  }
 }
 
 module.exports = Database;
