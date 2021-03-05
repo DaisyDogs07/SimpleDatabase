@@ -34,6 +34,10 @@ const database = new Database('database');
 * **Returns:** The JSON object
 ###### * = Required
 
+## Events
+* Err: This event is triggered when you encounter an error. If theres no listener for this event, An error is thrown.
+* Change: This event is triggered when the database file is changed by a method.
+
 #### Install now
 ```
 npm i @daisydogs07/simpledatabase
