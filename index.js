@@ -1,188 +1,201 @@
 const fs = require('fs'),
   path = require('path'),
-  {
-    EventEmitter
-  } = require('events');
+  {EventEmitter} = require('events');
 
-function newErr(database, message) {
-  if (database.listeners('err').length !== 0)
-    return database.emit('err', message);
-  const err = new TypeError(message);
-  throw err;
+/**
+ * The options for the Database
+ */
+class DatabaseOptions {
+  constructor(spaces = 2) {
+    this.spaces = Number(spaces);
+  }
 }
-
+/**
+ * The main Database class for creating a database
+ */
 class Database extends EventEmitter {
   /**
-   * Makes a new database. If the file is not present, Don't worry! We'll make it for you!
-   * @param {string} Location The path to the file. Defaults to "Database/All"
-   * @param {object} Options The options to give when creating the database
-   * @returns {Database} A reference to the Database
+   * Makes a new database. If the file is not present, We'll make it for you
+   * @param {string} Location The path to the file
+   * @param {DatabaseOptions} Options The options to give when creating the database
    */
-  constructor(location = 'Database/All', options = {
-    spaces: 2
-  }) {
+  constructor(location = './Database/All', options = new DatabaseOptions) {
     super();
     if (typeof location !== 'string')
-      return newErr(this, 'Location must be a string');
+      throw new TypeError('Location must be a string');
+    if (location.startsWith('/'))
+      throw new TypeError('Absolute paths are not supported yet');
     if (typeof options !== 'object')
-      return newErr(this, 'Options must be an object');
+      throw new TypeError('Options must be an object');
     if (typeof options.spaces !== 'number')
-      return newErr(this, 'Spaces option must be a number');
-    let loc = location.replace(/(..\/)|(.\/)/g, '').split('.');
-    if (loc.length !== 1)
-      if (loc[loc.length - 1] && loc[loc.length - 1] !== 'json')
-        return newErr(this, `File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' file extension`);
+      throw new TypeError('Spaces option must be a number');
+    if (options.spaces > 4)
+      options.spaces = 4;
+    let loca = location.replace(/..\/|.\//g, '').split('.');
+    if (loca.length !== 1)
+      if (loca[loca.length - 1] && loca[loca.length - 1] !== 'json')
+        throw new TypeError(`File extension '${loca[loca.length - 1]}' is not supported, Please use the 'json' file extension`);
     if (location.endsWith('.json'))
       location = location.slice(0, -5);
     let dir = location.split('/');
     delete dir[dir.length - 1];
     dir = dir.join('/');
-    location = location.replace(dir, '');
+    loca = location.replace(dir, '');
+    let filePath = `${path.resolve(dir)}/${loca}.json`;
     if (!fs.existsSync(dir))
       fs.mkdirSync(path.resolve(dir), {
         recursive: true
       });
-    const filePath = `${path.resolve(dir)}/${location}.json`;
     if (!fs.existsSync(filePath))
       fs.closeSync(fs.openSync(filePath, 'w'));
-    /**
-     * This indecates the full path to the database file
-     */
+    process.env.DatabaseSpaces = options.spaces;
     this.FilePath = filePath;
-    /**
-     * This indecates the amount spaces in the database file (Can also make it easier to read)
-     */
-    this.spaces = options.spaces;
+    fs.writeFileSync(filePath, JSON.stringify(this.read(), null, Number(this.spaces)));
   }
   /**
-   * Adds a specified amount to the JSON value
-   * @param {string} Path The path to the JSON key (Required)
-   * @param {number} Value The amount to add. Defaults to 1
-   * @returns {Database} A reference to the Database
+   * This indecates the amount spaces in the database file (Can also make it easier to read). Setting this value will update the database file
    */
-  add(path, value = 1) {
-    if (!path)
-      return newErr(this, 'Missing JSON path');
-    if (typeof path !== 'string')
-      return newErr(this, 'Path must be a string');
-    if (!isNaN(Number(path.charAt(0))))
-      return newErr(this, 'Path cannot start with a number');
-    if (typeof value !== 'number')
-      return newErr(this, 'Value must be a number');
-    path = path.replace(/ /g, '').trim();
-    let data = this.get(path);
-    if (typeof data === 'number')
-      data += Number(value)
-    else data = Number(value);
-    this.set(path, data);
-    return this;
+  get spaces() {
+    return process.env.DatabaseSpaces;
+  }
+  set spaces(num) {
+    if (!Number(num) && Number(num) !== 0)
+      throw new TypeError("Cannot set property 'spaces' to " + (function(){return typeof num==='object'?num===null?'':'an ':typeof num==='undefined'?'':'a '}()) + (function(){return num===null?'null':typeof num}()));
+    if (num > 4)
+      num = 4;
+    let data = this.read();
+    fs.writeFileSync(this.FilePath, JSON.stringify(this.read(), null, Number(num)));
+    this.emit('change', null, this.read(), data);
+    process.env.DatabaseSpaces = num;
+    return Number(num);
   }
   /**
-   * Subtracts a specified amount to the JSON value
-   * @param {string} Path The path to the JSON key (Required)
-   * @param {number} Value The amount to subtract. Defaults to 1
-   * @returns {Database} A reference to the Database
-   */
-  sub(path, value = 1) {
-    if (!path)
-      return newErr(this, 'Missing JSON path');
-    if (typeof path !== 'string')
-      return newErr(this, 'Path must be a string');
-    if (!isNaN(Number(path.charAt(0))))
-      return newErr(this, 'Path cannot start with a number');
-    if (typeof value !== 'number')
-      return newErr(this, 'Value must be a number');
-    path = path.replace(/ /g, '').trim();
-    let data = this.get(path);
-    if (typeof data === 'number')
-      data -= Number(value);
-    else data = Number(value);
-    this.set(path, data);
-    return this;
-  }
-  /**
-   * Gets the specified JSON key's value
+   * Adds a specified amount to the JSON key
    * @param {string} Path The path to the JSON key
-   * @returns {string | number | object} The JSON value of the JSON key
+   * @param {number} Amount The amount to add
+   */
+  add(path, amount = 1) {
+    if (!path)
+      throw new TypeError('Missing JSON path');
+    if (typeof path !== 'string')
+      throw new TypeError('Path must be a string');
+    if (!isNaN(Number(path.charAt(0))))
+      throw new TypeError('Path cannot start with a number');
+    if (typeof amount !== 'number')
+      throw new TypeError('Amount must be a number');
+    path = path.replace(/ /g, '');
+    let data = this.get(path);
+    if (typeof data === 'number')
+      data += Number(amount);
+    else data = Number(amount);
+    this.set(path, data);
+    return this;
+  }
+  /**
+   * Subtracts a specified amount to the JSON key
+   * @param {string} Path The path to the JSON key
+   * @param {number} Amount The amount to subtract
+   */
+  sub(path, amount = 1) {
+    if (!path)
+      throw new TypeError('Missing JSON path');
+    if (typeof path !== 'string')
+      throw new TypeError('Path must be a string');
+    if (!isNaN(Number(path.charAt(0))))
+      throw new TypeError('Path cannot start with a number');
+    if (typeof amount !== 'number')
+      throw new TypeError('Amount must be a number');
+    path = path.replace(/ /g, '');
+    let data = this.get(path);
+    if (typeof data === 'number')
+      data -= Number(amount);
+    else data = Number(amount);
+    this.set(path, data);
+    return this;
+  }
+  /**
+   * Gets the specified JSON key
+   * @param {string} Path The path to the JSON key
    */
   get(path) {
     if (!path)
       return this.read();
     if (typeof path !== 'string')
-      return newErr(this, 'Path must be a string');
+      throw new TypeError('Path must be a string');
     if (!isNaN(Number(path.charAt(0))))
-      return newErr(this, 'Path cannot start with a number');
-    path = path.replace(/ /g, '').trim();
-    let result = _get(path, this.read());
-    return result ? result : undefined;
+      throw new TypeError('Path cannot start with a number');
+    path = path.replace(/ /g, '');
+    return _get(path, this.read());
   }
   /**
-   * Sets a JSON value to the new value
-   * @param {string} Path the path to the JSON key (Required)
-   * @param {number} Value The value to set (Required)
-   * @returns {Database} A reference to the Database
+   * Sets a JSON key to the new value
+   * @param {string} Path the path to the JSON key
+   * @param {number} Value The value to set
    */
-  set(path, value = '') {
+  set(path, value) {
     if (!path)
-      return newErr(this, 'Missing JSON path');
+      throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
-      return newErr(this, 'Path must be a string');
+      throw new TypeError('Path must be a string');
     if (!isNaN(Number(path.charAt(0))))
-      return newErr(this, 'Path cannot start with a number');
+      throw new TypeError('Path cannot start with a number');
     if (typeof value === 'function')
-      return newErr(this, 'Value cannot be a function');
-    path = path.replace(/ /g, '').trim();
-    let data = _set(path, value, this.read());
-    if (this.get(path) === value)
-      return this;
+      value = value.toString();
+    path = path.replace(/ /g, '');
+    let data = this.read();
+    data = _set(path, value, data);
     this.emit('change', path, this.read(), data);
     fs.truncateSync(this.FilePath);
-    fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces), {
-      encoding: 'utf-8'
-    });
+    fs.writeFileSync(this.FilePath, JSON.stringify(data, null, Number(this.spaces)), 'utf8');
     return this;
   }
   /**
    * Deletes a JSON key
-   * @param {string} Path The path to the JSON key (Required)
-   * @returns {Database} A reference to the Database
+   * @param {string} Path The path to the JSON key
    */
   delete(path) {
     if (!path)
-      return newErr(this, 'Missing JSON path');
+      throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
-      return newErr(this, 'Path must be a string');
+      throw new TypeError('Path must be a string');
     if (!isNaN(Number(path.charAt(0))))
-      return newErr(this, 'Path cannot start with a number');
-    path = path.trim().replace(/ /g, '');
+      throw new TypeError('Path cannot start with a number');
+    path = path.replace(/ /g, '');
     if (!this.get(path))
       return this;
-    const data = this.read();
-    eval(`delete data.${path}`);
-    this.emit('change', path, this.read(), data);
-    fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces), {
-      encoding: 'utf-8'
+    path = path.split('.');
+    path.forEach((p, i) => {
+      path[i] = '[\'' + p + '\']';
     });
-    return this;
+    path = path.join('.').replace(/\.\[/g, '[');
+    const data = this.read();
+    try {
+      eval(`delete data${path}`);
+      this.emit('change', path, this.read(), data);
+      fs.writeFileSync(this.FilePath, JSON.stringify  (data, null, Number(this.spaces)));
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   }
   /**
    * Reads the JSON Object from the database file
-   * @returns {Object} The JSON object
    */
   read() {
-    let data = fs.readFileSync(this.FilePath, 'utf-8');
+    let data = fs.readFileSync(this.FilePath, 'utf8');
     return data ? JSON.parse(data) : {};
   }
 }
 
-function _set(path, value, obj = undefined) {
+function _set(path, value, obj) {
   if (obj === undefined)
     return undefined;
   let locations = path.split('.'),
     output = obj,
     ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
-    if (!ref[locations[i]])
+    if (ref[locations[i]] === undefined)
       ref = ref[locations[i]] = {};
     else ref = ref[locations[i]];
   }
@@ -193,11 +206,15 @@ function _get(path, obj = {}) {
   let locations = path.split('.'),
     ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
-    ref = ref[locations[i]] ? ref[locations[i]] : undefined;
-    if (!ref)
+    ref = ref[locations[i]] !== undefined ? ref[locations[i]] : undefined;
+    if (ref === undefined)
       return undefined;
   }
   return ref[locations[locations.length - 1]];
 }
 
+Database.DatabaseOptions = DatabaseOptions;
+//Backwards compat with Node 0.10.x
+Database.Database = Database;
+Database.default = Database;
 module.exports = Database;
