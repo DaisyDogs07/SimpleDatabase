@@ -14,19 +14,19 @@ This is my simple database, A database that uses fs.
 ### set(path, value)
 #### Sets a JSON value to the new value
 * **Path:** the path to the JSON key *
-* **Value:** The value to set *
+* **Value:** The value to set
 * **Returns:** A reference to the Database
 ### delete(path)
 #### Deletes a JSON key
-* **Path:** The path to the JSON key (Required)
-* **Returns:** A reference to the Database
+* **Path:** The path to the JSON key *
+* **Returns:** Boolean
 ### get(path)
 #### Gets the specified JSON key's value
 * **Path:** The path to the JSON key
 * **Returns:** The JSON value of the JSON key
 ### read()
 #### Reads the JSON Object from the database file
-* **Returns:** The JSON object
+* **Returns:** Object
 ###### * = Required
 
 ## Events
