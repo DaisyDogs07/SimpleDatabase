@@ -32,9 +32,8 @@ class Database extends EventEmitter {
     if (options.spaces > 4)
       options.spaces = 4;
     let loca = location.replace(/..\/|.\//g, '').split('.');
-    if (loca.length !== 1)
-      if (loca[loca.length - 1] && loca[loca.length - 1] !== 'json')
-        throw new TypeError(`File extension '${loca[loca.length - 1]}' is not supported, Please use the 'json' file extension`);
+    if (loca.length !== 1 && loca[loca.length - 1] && loca[loca.length - 1] !== 'json')
+      throw new TypeError(`File extension '${loca[loca.length - 1]}' is not supported, Please use the 'json' file extension`);
     if (location.endsWith('.json'))
       location = location.slice(0, -5);
     let dir = location.split('/');
@@ -56,7 +55,7 @@ class Database extends EventEmitter {
    * This indecates the amount spaces in the database file (Can also make it easier to read). Setting this value will update the database file
    */
   get spaces() {
-    return process.env.DatabaseSpaces;
+    return Number(process.env.DatabaseSpaces);
   }
   set spaces(num) {
     if (!Number(num) && Number(num) !== 0)
@@ -69,7 +68,7 @@ class Database extends EventEmitter {
     process.env.DatabaseSpaces = num;
     return Number(num);
   }
-  toString() {
+  toJSON() {
     return JSON.stringify(this.read());
   }
   /**
@@ -149,7 +148,7 @@ class Database extends EventEmitter {
     data = _set(path, value, data);
     this.emit('change', path, this.read(), data);
     fs.truncateSync(this.FilePath);
-    fs.writeFileSync(this.FilePath, JSON.stringify(data, null, Number(this.spaces)), 'utf8');
+    fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces));
     return this;
   }
   /**
@@ -175,7 +174,7 @@ class Database extends EventEmitter {
     try {
       eval(`delete data${path}`);
       this.emit('change', path, this.read(), data);
-      fs.writeFileSync(this.FilePath, JSON.stringify  (data, null, Number(this.spaces)));
+      fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces));
       return true;
     } catch (e) {
       console.log(e);
