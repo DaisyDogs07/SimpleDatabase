@@ -69,6 +69,9 @@ class Database extends EventEmitter {
     process.env.DatabaseSpaces = num;
     return Number(num);
   }
+  toString() {
+    return JSON.stringify(this.read());
+  }
   /**
    * Adds a specified amount to the JSON key
    * @param {string} Path The path to the JSON key
