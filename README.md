@@ -1,10 +1,5 @@
 # Welcome!
 This is my simple database, A database that uses fs.
-## Requiring and creating a database
-```js
-const Database = require('@daisydogs07/simpledatabase');
-const database = new Database('database');
-```
 ## Methods
 ### add(path, value)
 #### Adds a specified amount to the JSON value
@@ -35,10 +30,4 @@ const database = new Database('database');
 ###### * = Required
 
 ## Events
-* Err: This event is triggered when you encounter an error. If theres no listener for this event, An error is thrown.
 * Change: This event is triggered when the database file is changed by a method.
-
-#### Install now
-```
-npm i @daisydogs07/simpledatabase
-```
