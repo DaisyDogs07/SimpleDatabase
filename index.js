@@ -85,7 +85,6 @@ class Database extends EventEmitter {
       throw new TypeError('Path cannot start with a number');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
-    path = path.replace(/ /g, '');
     let data = this.get(path);
     if (typeof data === 'number')
       data += Number(amount);
@@ -107,7 +106,6 @@ class Database extends EventEmitter {
       throw new TypeError('Path cannot start with a number');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
-    path = path.replace(/ /g, '');
     let data = this.get(path);
     if (typeof data === 'number')
       data -= Number(amount);
@@ -126,7 +124,6 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (!isNaN(Number(path.charAt(0))))
       throw new TypeError('Path cannot start with a number');
-    path = path.replace(/ /g, '');
     return _get(path, this.read());
   }
   /**
@@ -143,7 +140,6 @@ class Database extends EventEmitter {
       throw new TypeError('Path cannot start with a number');
     if (typeof value === 'function')
       value = value.toString();
-    path = path.replace(/ /g, '');
     let data = this.read();
     data = _set(path, value, data);
     this.emit('change', path, this.read(), data);
@@ -162,7 +158,6 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (!isNaN(Number(path.charAt(0))))
       throw new TypeError('Path cannot start with a number');
-    path = path.replace(/ /g, '');
     if (!this.get(path))
       return this;
     path = path.split('.');
