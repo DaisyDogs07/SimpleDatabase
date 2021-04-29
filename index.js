@@ -159,7 +159,7 @@ class Database extends EventEmitter {
     if (!isNaN(Number(path.charAt(0))))
       throw new TypeError('Path cannot start with a number');
     if (!this.get(path))
-      return this;
+      return true;
     path = path.split('.');
     path.forEach((p, i) => {
       path[i] = '[\'' + p + '\']';
