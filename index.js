@@ -203,7 +203,7 @@ function _get(path, obj = {}) {
   let locations = path.split('.'),
     ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
-    ref = ref[locations[i]] !== undefined ? ref[locations[i]] : undefined;
+    ref = ref[locations[i]];
     if (ref === undefined)
       return undefined;
   }
