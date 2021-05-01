@@ -19,7 +19,7 @@ class Database extends EventEmitter {
    * @param {string} Location The path to the file
    * @param {DatabaseOptions} Options The options to give when creating the database
    */
-  constructor(location = './Database/All', options = new DatabaseOptions) {
+  constructor(location = 'database.json', options = new DatabaseOptions) {
     super();
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
@@ -31,16 +31,16 @@ class Database extends EventEmitter {
       throw new TypeError('Spaces option must be a number');
     if (options.spaces > 4)
       options.spaces = 4;
-    let loca = location.replace(/..\/|.\//g, '').split('.');
-    if (loca.length !== 1 && loca[loca.length - 1] && loca[loca.length - 1] !== 'json')
-      throw new TypeError(`File extension '${loca[loca.length - 1]}' is not supported, Please use the 'json' file extension`);
+    let loc = location.replace(/..\/|.\//g, '').split('.');
+    if (loc.length !== 1 && loc[loc.length - 1] && loc[loc.length - 1] !== 'json')
+      throw new TypeError(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' file extension`);
     if (location.endsWith('.json'))
       location = location.slice(0, -5);
     let dir = location.split('/');
     delete dir[dir.length - 1];
     dir = dir.join('/');
-    loca = location.replace(dir, '');
-    let filePath = `${path.resolve(dir)}/${loca}.json`;
+    loc = location.replace(dir, '');
+    let filePath = `${path.resolve(dir)}/${loc}.json`;
     if (!fs.existsSync(dir))
       fs.mkdirSync(path.resolve(dir), {
         recursive: true
@@ -162,9 +162,9 @@ class Database extends EventEmitter {
       return true;
     path = path.split('.');
     path.forEach((p, i) => {
-      path[i] = '[\'' + p + '\']';
+      path[i] = "['" + p + "']";
     });
-    path = path.join('.').replace(/\.\[/g, '[');
+    path = path.join('');
     const data = this.read();
     try {
       eval(`delete data${path}`);
@@ -186,8 +186,8 @@ class Database extends EventEmitter {
 }
 
 function _set(path, value, obj) {
-  if (obj === undefined)
-    return undefined;
+  if (!obj)
+    return;
   let locations = path.split('.'),
     output = obj,
     ref = obj;
@@ -205,7 +205,7 @@ function _get(path, obj = {}) {
   for (let i = 0; i < locations.length - 1; i++) {
     ref = ref[locations[i]];
     if (ref === undefined)
-      return undefined;
+      return;
   }
   return ref[locations[locations.length - 1]];
 }
