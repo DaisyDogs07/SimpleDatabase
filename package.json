@@ -1,0 +1,11 @@
+{
+  "name": "SimpleDatabase",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {},
+  "repository": {
+    "url": "https://github.com/DaisyDogs07/SimpleDatabase"
+  }
+}
