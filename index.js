@@ -138,6 +138,8 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (!isNaN(Number(path.charAt(0))))
       throw new TypeError('Path cannot start with a number');
+    if (value === undefined)
+      throw new TypeError("Value cannot be 'undefined'");
     if (typeof value === 'function')
       value = value.toString();
     let data = this.read();
