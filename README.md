@@ -1,5 +1,14 @@
 # Welcome!
 This is my simple database, A database that uses fs.
+## Install
+```
+npm i github:DaisyDogs07/SimpleDatabase
+```
+## Setup
+```js
+const Database = require('SimpleDatabase');
+const database = new Database();
+```
 ## Methods
 ### add(path, value)
 #### Adds a specified amount to the JSON value
