@@ -23,15 +23,15 @@ class Database extends EventEmitter {
     super();
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
-    if (location.startsWith('/'))
-      throw new TypeError('Absolute paths are not supported yet');
+    if (location.startsWith('/') || location.startsWith('./') || location.startsWith('../'))
+      throw new TypeError('Absolute and relative paths are not supported yet');
     if (typeof options !== 'object')
       throw new TypeError('Options must be an object');
     if (typeof options.spaces !== 'number')
       throw new TypeError('Spaces option must be a number');
     if (options.spaces > 4)
       options.spaces = 4;
-    let loc = location.replace(/..\/|.\//g, '').split('.');
+    let loc = location.split('.');
     if (loc.length !== 1 && loc[loc.length - 1] && loc[loc.length - 1] !== 'json')
       throw new TypeError(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' file extension`);
     if (location.endsWith('.json'))
@@ -48,7 +48,11 @@ class Database extends EventEmitter {
     if (!fs.existsSync(filePath))
       fs.closeSync(fs.openSync(filePath, 'w'));
     process.env.DatabaseSpaces = options.spaces;
-    this.FilePath = filePath;
+    Object.assign(this, {
+      get FilePath() {
+        return filePath;
+      }
+    });
     fs.writeFileSync(filePath, JSON.stringify(this.read(), null, Number(this.spaces)));
   }
   /**
@@ -184,6 +188,21 @@ class Database extends EventEmitter {
   read() {
     let data = fs.readFileSync(this.FilePath, 'utf8');
     return data ? JSON.parse(data) : {};
+  }
+  /**
+   * Moves the Database to a new file
+   */
+  moveTo(location, deleteFile = true) {
+    if (typeof deleteFile !== 'boolean')
+      throw new TypeError('DeleteFile must be boolean');
+    const database = new Database(location, {
+      spaces: this.spaces
+    });
+    fs.writeFileSync(database.FilePath, JSON.stringify(this.read(), null, this.spaces));
+    if (deleteFile)
+      fs.unlinkSync(this.FilePath);
+    Object.assign(this, database);
+    return this;
   }
 }
 

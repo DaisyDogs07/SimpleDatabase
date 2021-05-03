@@ -35,7 +35,12 @@ const database = new Database();
 * **Returns:** The JSON value of the JSON key
 ### read()
 #### Reads the JSON Object from the database file
-* **Returns:** Object
+* **Returns:** object
+### moveTo(location, deleteFile)
+#### Moves the Database to a new file
+* **Location:** The location of the new file *
+* **DeleteFile:** Whether to delete the previous file
+* **Returns:** A reference to the Database
 ###### * = Required
 
 ## Events
