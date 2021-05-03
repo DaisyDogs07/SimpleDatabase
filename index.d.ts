@@ -13,7 +13,7 @@ declare module 'SimpleDatabase' {
     public sub(path: string, amount?: number): this;
     public set(path: string, value: any): this;
     public get(path: string): any;
-    public delete(path): boolean;
+    public delete(path: string): boolean;
     private read(): object;
     private static DatabaseOptions: DatabaseOptions;
 
