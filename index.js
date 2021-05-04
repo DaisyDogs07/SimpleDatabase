@@ -10,6 +10,7 @@ class DatabaseOptions {
     this.spaces = Number(spaces);
   }
 }
+
 /**
  * The main Database class for creating a database
  */
@@ -193,6 +194,8 @@ class Database extends EventEmitter {
    * Moves the Database to a new file
    */
   moveTo(location, deleteFile = true) {
+    if (!location)
+      throw new TypeError(`Cannot move database to ${location}`);
     if (typeof deleteFile !== 'boolean')
       throw new TypeError('DeleteFile must be boolean');
     const database = new Database(location, {

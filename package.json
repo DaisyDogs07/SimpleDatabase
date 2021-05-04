@@ -4,7 +4,13 @@
   "main": "index.js",
   "author": "DaisyDogs07",
   "license": "ISC",
+  "homepage": {
+    "url": "https://github.com/DaisyDogs07/SimpleDatabase#readme"
+  },
   "repository": {
     "url": "https://github.com/DaisyDogs07/SimpleDatabase"
+  },
+  "bugs": {
+    "url": "https://github.com/DaisyDogs07/SimpleDatabase/issues"
   }
 }
