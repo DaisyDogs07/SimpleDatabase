@@ -207,6 +207,15 @@ class Database extends EventEmitter {
     Object.assign(this, database);
     return this;
   }
+  static get Database() {
+    return Database;
+  }
+  static get DatabaseOptions() {
+    return DatabaseOptions;
+  }
+  static get default() {
+    return Database;
+  }
 }
 
 function _set(path, value, obj) {
@@ -234,8 +243,4 @@ function _get(path, obj = {}) {
   return ref[locations[locations.length - 1]];
 }
 
-Database.DatabaseOptions = DatabaseOptions;
-//Backwards compat with Node 0.10.x
-Database.Database = Database;
-Database.default = Database;
 module.exports = Database;
