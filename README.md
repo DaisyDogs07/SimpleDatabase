@@ -36,7 +36,7 @@ const database = new Database();
 * **Path:** The path to the JSON key
 * **Returns:** boolean
 
-### get(path)
+### get([path])
 #### Gets the specified JSON key's value
 * **Path:** The path to the JSON key
 * **Returns:** The JSON value of the JSON key
