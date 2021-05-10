@@ -194,7 +194,7 @@ class Database extends EventEmitter {
    */
   moveTo(location, deleteFile = true) {
     if (!location)
-      throw new TypeError(`Cannot move database to ${location}`);
+      throw new TypeError(`Cannot move database to '${location}'`);
     if (typeof deleteFile !== 'boolean')
       throw new TypeError('DeleteFile must be boolean');
     const database = new Database(location, {
