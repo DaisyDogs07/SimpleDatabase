@@ -13,19 +13,19 @@ const database = new Database();
 ```
 
 ## Methods
-### add(path[, amount])
+### add(path\[, amount\])
 #### Adds a specified amount to the JSON value
 * **Path:** The path to the JSON key
 * **Amount:** The amount to add
 * **Returns:** A reference to the Database
 
-### sub(path[, amount])
+### sub(path\[, amount\])
 #### Subtracts a specified amount to the JSON value
 * **Path:** The path to the JSON key
 * **Amount:** The amount to subtract
 * **Returns:** A reference to the Database
 
-### set(path[, value])
+### set(path\[, value\])
 #### Sets a JSON value to the new value
 * **Path:** the path to the JSON key
 * **Value:** The value to set
@@ -36,7 +36,7 @@ const database = new Database();
 * **Path:** The path to the JSON key
 * **Returns:** boolean
 
-### get([path])
+### get(\[path\])
 #### Gets the specified JSON key's value
 * **Path:** The path to the JSON key
 * **Returns:** The JSON value of the JSON key
@@ -45,7 +45,7 @@ const database = new Database();
 #### Reads the JSON Object from the database file
 * **Returns:** object
 
-### moveTo(location[, deleteFile])
+### moveTo(location\[, deleteFile\])
 #### Moves the Database to a new file
 * **Location:** The location of the new file
 * **DeleteFile:** Whether to delete the previous file
