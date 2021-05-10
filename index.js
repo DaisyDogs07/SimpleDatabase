@@ -48,30 +48,29 @@ class Database extends EventEmitter {
       });
     if (!fs.existsSync(filePath))
       fs.closeSync(fs.openSync(filePath, 'w'));
-    process.env.DatabaseSpaces = options.spaces;
     Object.assign(this, {
       get FilePath() {
         return filePath;
+      },
+      /**
+       * This indicates the amount of spaces in the Database file. Setting this value will update the Database file
+       */
+      get spaces() {
+        return options.spaces;
+      },
+      set spaces(num) {
+        if (!Number(num) && Number(num) !== 0)
+          throw new TypeError("Cannot set property 'spaces' to " + (function(){return typeof num==='object'?num===null?'':'an ':typeof num==='undefined'?'':'a '}()) + (function(){return num===null?'null':typeof num}()));
+        if (num > 4)
+          num = 4;
+        let data = this.read();
+        fs.writeFileSync(this.FilePath, JSON.stringify(this.read(), null, Number(num)));
+        this.emit('change', null, this.read(), data);
+        options.spaces = Number(num);
+        return Number(num);
       }
     });
     fs.writeFileSync(filePath, JSON.stringify(this.read(), null, Number(this.spaces)));
-  }
-  /**
-   * This indecates the amount spaces in the database file (Can also make it easier to read). Setting this value will update the database file
-   */
-  get spaces() {
-    return Number(process.env.DatabaseSpaces);
-  }
-  set spaces(num) {
-    if (!Number(num) && Number(num) !== 0)
-      throw new TypeError("Cannot set property 'spaces' to " + (function(){return typeof num==='object'?num===null?'':'an ':typeof num==='undefined'?'':'a '}()) + (function(){return num===null?'null':typeof num}()));
-    if (num > 4)
-      num = 4;
-    let data = this.read();
-    fs.writeFileSync(this.FilePath, JSON.stringify(this.read(), null, Number(num)));
-    this.emit('change', null, this.read(), data);
-    process.env.DatabaseSpaces = num;
-    return Number(num);
   }
   toJSON() {
     return JSON.stringify(this.read());
