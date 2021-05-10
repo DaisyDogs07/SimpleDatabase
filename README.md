@@ -2,7 +2,7 @@
 This is my simple database, A database that uses fs.
 
 ## Install
-```
+```console
 npm i github:DaisyDogs07/SimpleDatabase
 ```
 
