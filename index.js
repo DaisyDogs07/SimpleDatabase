@@ -25,7 +25,7 @@ class Database extends EventEmitter {
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
     if (location.startsWith('/') || location.startsWith('./') || location.startsWith('../'))
-      throw new TypeError('Absolute and relative paths are not supported yet');
+      throw new TypeError('Absolute and relative paths are not supported');
     if (typeof options !== 'object')
       throw new TypeError('Options must be an object');
     if (typeof options.spaces !== 'number')
@@ -53,7 +53,7 @@ class Database extends EventEmitter {
         return filePath;
       },
       /**
-       * This indicates the amount of spaces in the Database file. Setting this value will update the Database file
+       * The amount of spaces in the Database file. Setting this value will update the Database file
        */
       get spaces() {
         return options.spaces;
@@ -72,8 +72,8 @@ class Database extends EventEmitter {
     });
     fs.writeFileSync(filePath, JSON.stringify(this.read(), null, Number(this.spaces)));
   }
-  toJSON() {
-    return JSON.stringify(this.read());
+  toString() {
+    return fs.readFileSync(this.FilePath, 'utf8');
   }
   /**
    * Adds a specified amount to the JSON key
@@ -85,8 +85,6 @@ class Database extends EventEmitter {
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (!isNaN(Number(path.charAt(0))))
-      throw new TypeError('Path cannot start with a number');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     let data = this.get(path);
@@ -106,8 +104,6 @@ class Database extends EventEmitter {
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (!isNaN(Number(path.charAt(0))))
-      throw new TypeError('Path cannot start with a number');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     let data = this.get(path);
@@ -126,8 +122,6 @@ class Database extends EventEmitter {
       return this.read();
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (!isNaN(Number(path.charAt(0))))
-      throw new TypeError('Path cannot start with a number');
     return _get(path, this.read());
   }
   /**
@@ -140,8 +134,6 @@ class Database extends EventEmitter {
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (!isNaN(Number(path.charAt(0))))
-      throw new TypeError('Path cannot start with a number');
     if (value === undefined)
       throw new TypeError("Value cannot be 'undefined'");
     if (typeof value === 'function')
@@ -162,8 +154,6 @@ class Database extends EventEmitter {
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (!isNaN(Number(path.charAt(0))))
-      throw new TypeError('Path cannot start with a number');
     if (!this.get(path))
       return true;
     path = path.split('.');
@@ -178,7 +168,7 @@ class Database extends EventEmitter {
       fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces));
       return true;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return false;
     }
   }
@@ -194,7 +184,7 @@ class Database extends EventEmitter {
    */
   moveTo(location, deleteFile = true) {
     if (!location)
-      throw new TypeError(`Cannot move database to '${location}'`);
+      throw new TypeError('No location provided');
     if (typeof deleteFile !== 'boolean')
       throw new TypeError('DeleteFile must be boolean');
     const database = new Database(location, {
