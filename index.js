@@ -141,6 +141,7 @@ class Database extends EventEmitter {
     let data = this.read();
     data = _set(path, value, data);
     this.emit('change', path, this.read(), data);
+    fs.truncateSync(this.FilePath);
     fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces));
     return this;
   }
