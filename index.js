@@ -142,10 +142,12 @@ class Database extends EventEmitter {
       throw new TypeError("Value cannot be 'undefined'");
     if (typeof value === 'function')
       value = value.toString();
-    let data = this.read();
-    data = _set(path, value, data);
-    this.emit('change', path, this.read(), data);
-    fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces));
+    if (this.get(path) !== value) {
+      let data = this.read();
+      data = _set(path, value, data);
+      this.emit('change', path, this.read(), data);
+      fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces));
+    }
     return this;
   }
   /**
@@ -159,15 +161,16 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (!this.get(path))
       return true;
+    let p = path;
     path = path.split('.');
-    path.forEach((p, i) => {
-      path[i] = "['" + p + "']";
+    path.forEach((v, i) => {
+      path[i] = "['" + v + "']";
     });
     path = path.join('');
     const data = this.read();
     try {
       eval(`delete data${path}`);
-      this.emit('change', path, this.read(), data);
+      this.emit('change', p, this.read(), data);
       fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces));
       return true;
     } catch (e) {
@@ -186,8 +189,10 @@ class Database extends EventEmitter {
    * Clears the Database file. Use with caution
    */
   clear() {
-    this.emit('change', null, this.read(), {});
-    fs.writeFileSync(this.FilePath, '{}');
+    if (this.toString() !== '{}') {
+      this.emit('change', null, this.read(), {});
+      fs.writeFileSync(this.FilePath, '{}');
+    }
   }
   /**
    * Moves the Database to a new file
