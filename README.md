@@ -8,8 +8,8 @@ npm i github:DaisyDogs07/SimpleDatabase
 
 ## Setup
 ```js
-const Database = require('SimpleDatabase');
-const database = new Database();
+const Database = require('SimpleDatabase')
+const database = new Database()
 ```
 
 ## Methods
