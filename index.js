@@ -132,7 +132,7 @@ class Database extends EventEmitter {
   set(path, value) {
     if (!path && path === '') {
       if (typeof value !== 'object' || value === null)
-        throw new TypeError('Cannot set JSON to ' + (function(){return typeof value==='object'?value===null?'':'an ':typeof value==='undefined'?'':'a '}()) + (function(){return value===null?'null':typeof value}()))
+        throw new TypeError('Cannot set JSON to ' + (function(){return typeof value==='object'?value===null?'':'an ':typeof value==='undefined'?'':'a '}()) + (function(){return value===null?'null':typeof value}()));
       this.emit('change', path, this.read(), value);
       return fs.writeFileSync(this.FilePath, JSON.stringify(value, null, this.spaces));
     }
@@ -177,6 +177,29 @@ class Database extends EventEmitter {
       console.error(e);
       return false;
     }
+  }
+  /**
+   * Finds a JSON key
+   * @param {string} Path The scope of where to look
+   * @param {Function} fn The function to test with
+   * @param {*} thisArg The value to use as 'this' when executing fn
+   */
+   find(path, fn, thisArg) {
+    if (typeof path !== 'string')
+      throw new TypeError('Path must be a string');
+    if (typeof fn !== 'function')
+      throw new TypeError('fn must be a function');
+    if (thisArg !== undefined && thisArg !== null)
+      fn = fn.bind(thisArg);
+    let obj = this.get(path);
+    if (typeof obj !== 'object' || obj === null)
+      throw new TypeError('Path must lead to an object');
+    let entries = Object.entries(obj);
+    for (const [k, v] of entries) {
+      if (fn(v, k))
+        return v;
+    }
+    return undefined;
   }
   /**
    * Reads the JSON Object from the database file

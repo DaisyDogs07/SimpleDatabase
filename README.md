@@ -41,6 +41,12 @@ const database = new Database();
 * **Path:** The path to the JSON key
 * **Returns:** The JSON value of the JSON key
 
+### find(path, fn\[, thisArg\])
+#### Finds a JSON key
+* **Path:** The scope of where to look
+* **fn:** The function to test with
+* **thisArg:** The value to use as 'this' when executing fn
+
 ### read()
 #### Reads the JSON Object from the database file
 * **Returns:** object
