@@ -1,6 +1,8 @@
 const fs = require('fs'),
   path = require('path'),
-  {EventEmitter} = require('events');
+  {
+    EventEmitter
+  } = require('events')
 
 /**
  * The options for the Database
