@@ -1,5 +1,5 @@
 # Welcome!
-This is my simple database, A database that uses fs.
+This is my simple database, A database that uses fs
 
 ## Install
 ```console
