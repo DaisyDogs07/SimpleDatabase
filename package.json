@@ -4,7 +4,7 @@
   "main": "index.js",
   "author": "DaisyDogs07",
   "license": "ISC",
-  "test": "maybe",
+  "test": "test",
   "homepage": {
     "url": "https://github.com/DaisyDogs07/SimpleDatabase#readme"
   },
