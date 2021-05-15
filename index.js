@@ -18,9 +18,9 @@ class Database extends EventEmitter {
   /**
    * Makes a new database. If the file is not present, We'll make it for you
    * @param {string} Location The path to the file
-   * @param {DatabaseOptions} Options The options to give when creating the database
+   * @param {DatabaseOptions | object} Options The options to give when creating the database
    */
-  constructor(location = 'database.json', options = new DatabaseOptions) {
+  constructor(location = 'database', options = new DatabaseOptions) {
     super();
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
@@ -33,7 +33,7 @@ class Database extends EventEmitter {
     if (options.spaces > 4)
       options.spaces = 4;
     let loc = location.split('.');
-    if (loc.length !== 1 && loc[loc.length - 1] && loc[loc.length - 1] !== 'json')
+    if (loc.length !== 1 && loc[loc.length - 1] !== 'json')
       throw new TypeError(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' file extension`);
     if (location.endsWith('.json'))
       location = location.slice(0, -5);
@@ -87,12 +87,11 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
-    let data = this.get(path);
     if (typeof data !== 'number')
       throw new TypeError('Path must lead to a number');
-    data += Number(amount);
-    this.set(path, data);
-    return this;
+    let v = this.get(path);
+    v += Number(amount);
+    return this.set(path, v);
   }
   /**
    * Subtracts a specified amount to the JSON key
@@ -106,12 +105,11 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
-    let data = this.get(path);
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
-    data -= Number(amount);
-    this.set(path, data);
-    return this;
+    let v = this.get(path);
+    v -= Number(amount);
+    return this.set(path, v);
   }
   /**
    * Gets the specified JSON key
@@ -131,7 +129,7 @@ class Database extends EventEmitter {
    */
   set(path, value) {
     if (path === '') {
-      if (typeof value !== 'object' || value === null)
+      if (typeOf(value) !== 'an object')
         throw new TypeError('Cannot set JSON to ' + typeOf(value));
       this.emit('change', path, this.read(), value);
       fs.writeFileSync(this.FilePath, JSON.stringify(value, null, this.spaces));
@@ -160,7 +158,7 @@ class Database extends EventEmitter {
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (typeOf(this.get(path)) === 'undefined')
+    if (this.get(path) === undefined)
       return true;
     let p = path;
     path = path.split('.');
@@ -195,8 +193,7 @@ class Database extends EventEmitter {
     let obj = this.get(path);
     if (typeOf(obj) !== 'an object')
       throw new TypeError('Path must lead to an object');
-    let entries = Object.entries(obj);
-    for (const [k, v] of entries) {
+    for (const [k, v] of Object.entries(obj)) {
       if (fn(v, k))
         return v;
     }
@@ -218,9 +215,8 @@ class Database extends EventEmitter {
     let obj = this.get(path);
     if (typeof obj !== 'object' || obj === null)
       throw new TypeError('Path must lead to an object');
-    let entries = Object.entries(obj),
       arr = [];
-    for (const [k, v] of entries) {
+    for (const [k, v] of Object.entries(obj)) {
       if (fn(v, k))
         arr[arr.length] = v;
     }
@@ -258,8 +254,7 @@ class Database extends EventEmitter {
     fs.writeFileSync(database.FilePath, JSON.stringify(this.read(), null, this.spaces));
     if (deleteFile)
       fs.unlinkSync(this.FilePath);
-    Object.assign(this, database);
-    return this;
+    return Object.assign(this, database);
   }
   static get Database() {
     return Database;
@@ -301,7 +296,7 @@ function _set(path, value, obj) {
   ref[locations[locations.length - 1]] = value;
   return output;
 }
-function _get(path, obj = {}) {
+function _get(path, obj) {
   let locations = path.split('.'),
     ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
