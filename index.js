@@ -203,6 +203,32 @@ class Database extends EventEmitter {
     return undefined;
   }
   /**
+   * Same as find() except it returns an array
+   * @param {string} Path The scope of where to look
+   * @param {Function} fn The function to test with
+   * @param {*} thisArg The value to use as 'this' when executing fn
+   */
+  findAll(path, fn, thisArg) {
+    if (typeof path !== 'string')
+      throw new TypeError('Path must be a string');
+    if (typeof fn !== 'function')
+      throw new TypeError('fn must be a function');
+    if (thisArg !== undefined && thisArg !== null)
+      fn = fn.bind(thisArg);
+    let obj = this.get(path);
+    if (typeof obj !== 'object' || obj === null)
+      throw new TypeError('Path must lead to an object');
+    let entries = Object.entries(obj),
+      arr = [];
+    for (const [k, v] of entries) {
+      if (fn(v, k))
+        arr[arr.length] = v;
+    }
+    return arr.length === 0
+      ? undefined
+      : arr;
+  }
+  /**
    * Reads the JSON Object from the database file
    */
   read() {
@@ -257,8 +283,8 @@ function typeOf(value) {
         : 'a '
     ) + (
       value === null
-      ? 'null'
-      : typeof value
+        ? 'null'
+        : typeof value
     );
 }
 function _set(path, value, obj) {

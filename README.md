@@ -48,6 +48,14 @@ const database = new Database();
 * **thisArg:** The value to use as 'this' when executing fn
 * **Returns:** The value that succeeded in the test, 'undefined' if none was successful
 
+### findAll(path, fn\[, thisArg\])
+#### Same as find() except it returns an array
+* **Path:** The scope of where to look
+* **fn:** The function to test with
+* **thisArg:** The value to use as 'this' when executing fn
+* **Returns:** An array of values that succeeded in the test, 'undefined' if none was successful
+
+
 ### read()
 #### Reads the JSON Object from the database file
 * **Returns:** object
