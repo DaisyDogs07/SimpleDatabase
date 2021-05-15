@@ -60,7 +60,7 @@ class Database extends EventEmitter {
       },
       set spaces(num) {
         if (!Number(num) && Number(num) !== 0)
-          throw new TypeError("Cannot set property 'spaces' to " + (function(){return typeof num==='object'?num===null?'':'an ':typeof num==='undefined'?'':'a '}()) + (function(){return num===null?'null':typeof num}()));
+          throw new TypeError("Cannot set property 'spaces' to " + typeOf(num));
         if (num > 4)
           num = 4;
         let data = this.read();
@@ -88,9 +88,9 @@ class Database extends EventEmitter {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     let data = this.get(path);
-    if (typeof data === 'number')
-      data += Number(amount);
-    else data = Number(amount);
+    if (typeof data !== 'number')
+      throw new TypeError('Path must lead to a number');
+    data += Number(amount);
     this.set(path, data);
     return this;
   }
@@ -107,9 +107,9 @@ class Database extends EventEmitter {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     let data = this.get(path);
-    if (typeof data === 'number')
-      data -= Number(amount);
-    else data = Number(amount);
+    if (typeof amount !== 'number')
+      throw new TypeError('Amount must be a number');
+    data -= Number(amount);
     this.set(path, data);
     return this;
   }
@@ -132,9 +132,10 @@ class Database extends EventEmitter {
   set(path, value) {
     if (!path && path === '') {
       if (typeof value !== 'object' || value === null)
-        throw new TypeError('Cannot set JSON to ' + (function(){return typeof value==='object'?value===null?'':'an ':typeof value==='undefined'?'':'a '}()) + (function(){return value===null?'null':typeof value}()));
+        throw new TypeError('Cannot set JSON to ' + typeOf(value));
       this.emit('change', path, this.read(), value);
-      return fs.writeFileSync(this.FilePath, JSON.stringify(value, null, this.spaces));
+      fs.writeFileSync(this.FilePath, JSON.stringify(value, null, this.spaces));
+      return this;
     }
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
@@ -245,6 +246,21 @@ class Database extends EventEmitter {
   }
 }
 
+function typeOf(value) {
+  return (
+    typeof value === 'object'
+      ? value === null
+        ? ''
+        : 'an '
+      : typeof value === 'undefined'
+        ? ''
+        : 'a '
+    ) + (
+      value === null
+      ? 'null'
+      : typeof value
+    );
+}
 function _set(path, value, obj) {
   if (!obj)
     return;
