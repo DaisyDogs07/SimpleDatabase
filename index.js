@@ -24,8 +24,8 @@ class Database extends EventEmitter {
     super();
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
-    if (location.startsWith('/') || location.startsWith('./') || location.startsWith('../'))
-      throw new TypeError('Absolute and relative paths are not supported');
+    if (location.startsWith('./') || location.startsWith('../'))
+      throw new TypeError('Relative paths are not supported');
     if (typeof options !== 'object')
       throw new TypeError('Options must be an object');
     if (typeof options.spaces !== 'number')
@@ -130,7 +130,7 @@ class Database extends EventEmitter {
    * @param {number} Value The value to set
    */
   set(path, value) {
-    if (!path && path === '') {
+    if (path === '') {
       if (typeof value !== 'object' || value === null)
         throw new TypeError('Cannot set JSON to ' + typeOf(value));
       this.emit('change', path, this.read(), value);
@@ -160,7 +160,7 @@ class Database extends EventEmitter {
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (!this.get(path))
+    if (typeOf(this.get(path)) === 'undefined')
       return true;
     let p = path;
     path = path.split('.');
@@ -193,7 +193,7 @@ class Database extends EventEmitter {
     if (thisArg !== undefined && thisArg !== null)
       fn = fn.bind(thisArg);
     let obj = this.get(path);
-    if (typeof obj !== 'object' || obj === null)
+    if (typeOf(obj) !== 'an object')
       throw new TypeError('Path must lead to an object');
     let entries = Object.entries(obj);
     for (const [k, v] of entries) {
