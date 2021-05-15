@@ -46,6 +46,7 @@ const database = new Database();
 * **Path:** The scope of where to look
 * **fn:** The function to test with
 * **thisArg:** The value to use as 'this' when executing fn
+* **Returns:** The value that succeeded in the test, 'undefined' if none was successful
 
 ### read()
 #### Reads the JSON Object from the database file
