@@ -12,6 +12,13 @@ const Database = require('SimpleDatabase');
 const database = new Database();
 ```
 
+## Database Parameters
+* **Location:** The location of the Database file
+* **Options:** The options for the Database (It's an object)
+
+## Database Options
+* **Spaces:** The amount of spaces to format the file with
+
 ## Methods
 ### add(path\[, amount\])
 #### Adds a specified amount to the JSON value
