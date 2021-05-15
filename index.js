@@ -129,7 +129,7 @@ class Database extends EventEmitter {
    */
   set(path, value) {
     if (path === '') {
-      if (typeOf(value) !== 'an object')
+      if (typeof value !== 'object' || value === null)
         throw new TypeError('Cannot set JSON to ' + typeOf(value));
       this.emit('change', path, this.read(), value);
       fs.writeFileSync(this.FilePath, JSON.stringify(value, null, this.spaces));
