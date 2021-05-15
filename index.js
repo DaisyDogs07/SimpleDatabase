@@ -78,15 +78,13 @@ class Database extends EventEmitter {
   /**
    * Adds a specified amount to the JSON key
    * @param {string} Path The path to the JSON key
-   * @param {number | Promise<number>} Amount The amount to add
+   * @param {?number} Amount The amount to add
    */
   add(path, amount = 1) {
     if (!path)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (amount instanceof Promise)
-      return amount.then(v => this.add(path, v));
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     if (typeof data !== 'number')
@@ -98,15 +96,13 @@ class Database extends EventEmitter {
   /**
    * Subtracts a specified amount to the JSON key
    * @param {string} Path The path to the JSON key
-   * @param {number | Promise<number>} Amount The amount to subtract
+   * @param {?number} Amount The amount to subtract
    */
   sub(path, amount = 1) {
     if (!path)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (amount instanceof Promise)
-      return amount.then(v => this.sub(path, v));
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     let v = this.get(path);
@@ -127,12 +123,10 @@ class Database extends EventEmitter {
   /**
    * Sets a JSON key to the new value
    * @param {string} Path the path to the JSON key
-   * @param {any | Promise<any>} Value The value to set
+   * @param {any} Value The value to set
    */
   set(path, value) {
     if (path === '') {
-      if (value instanceof Promise)
-        return value.then(v => this.set(path, v));
       if (typeof value !== 'object' || value === null)
         throw new TypeError('Cannot set JSON to ' + typeOf(value));
       this.emit('change', path, this.read(), value);
@@ -141,8 +135,6 @@ class Database extends EventEmitter {
     }
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (value instanceof Promise)
-      return value.then(v => this.set(path, v));
     if (value === undefined)
       throw new TypeError("Value cannot be 'undefined'");
     if (typeof value === 'function')
