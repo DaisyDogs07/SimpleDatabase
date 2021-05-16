@@ -169,7 +169,9 @@ class Database extends EventEmitter {
     path = path.join('');
     const data = this.read();
     try {
-      eval(`delete data${path}`);
+      let removed = eval(`delete data${path}`);
+      if (!removed)
+        return false;
       this.emit('change', p, this.read(), data);
       fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces));
       return true;
