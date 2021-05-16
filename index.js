@@ -24,8 +24,6 @@ class Database extends EventEmitter {
     super();
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
-    if (location.startsWith('./') || location.startsWith('../'))
-      throw new TypeError('Relative paths are not supported');
     if (typeof options !== 'object')
       throw new TypeError('Options must be an object');
     if (typeof options.spaces !== 'number')
