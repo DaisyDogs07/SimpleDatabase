@@ -28,6 +28,8 @@ class Database extends EventEmitter {
       throw new TypeError('Options must be an object');
     if (typeof options.spaces !== 'number')
       throw new TypeError('Spaces option must be a number');
+    if (options.spaces < 0)
+      options.spaces = 0;
     if (options.spaces > 4)
       options.spaces = 4;
     let loc = location.split('.');
