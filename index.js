@@ -62,13 +62,16 @@ class Database extends EventEmitter {
       set spaces(num) {
         if (!Number(num) && Number(num) !== 0)
           throw new TypeError("Cannot set property 'spaces' to " + typeOf(num));
+        num = Number(num);
+        if (num === Infinity)
+          throw new TypeError('Spaces connot be Infinity');
         if (num > 4)
           num = 4;
         let data = this.read();
-        fs.writeFileSync(this.FilePath, JSON.stringify(this.read(), null, Number(num)));
+        fs.writeFileSync(this.FilePath, JSON.stringify(this.read(), null, num));
         this.emit('change', null, this.read(), data);
-        options.spaces = Number(num);
-        return Number(num);
+        options.spaces = num;
+        return num;
       }
     });
     fs.writeFileSync(filePath, JSON.stringify(this.read(), null, Number(this.spaces)));
@@ -88,6 +91,8 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
+    if (amount === Infinity)
+      throw new TypeError('Amount connot be Infinity');
     let v = this.get(path);
     if (typeof v !== 'number')
       throw new TypeError('Path must lead to a number');
@@ -106,6 +111,8 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
+    if (amount === Infinity)
+      throw new TypeError('Amount connot be Infinity');
     let v = this.get(path);
     if (typeof v !== 'number')
       throw new TypeError('Path must lead to a number');
