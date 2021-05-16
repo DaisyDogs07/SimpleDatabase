@@ -64,7 +64,7 @@ class Database extends EventEmitter {
           throw new TypeError("Cannot set property 'spaces' to " + typeOf(num));
         num = Number(num);
         if (num < 0)
-          mun = 0;
+          num = 0;
         if (num > 4)
           num = 4;
         let data = this.read();
