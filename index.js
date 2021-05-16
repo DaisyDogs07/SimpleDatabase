@@ -63,8 +63,8 @@ class Database extends EventEmitter {
         if (!Number(num) && Number(num) !== 0)
           throw new TypeError("Cannot set property 'spaces' to " + typeOf(num));
         num = Number(num);
-        if (num === Infinity)
-          throw new TypeError('Spaces connot be Infinity');
+        if (num < 0)
+          mun = 0;
         if (num > 4)
           num = 4;
         let data = this.read();
