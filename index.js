@@ -90,9 +90,9 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
-    if (typeof data !== 'number')
-      throw new TypeError('Path must lead to a number');
     let v = this.get(path);
+    if (typeof v !== 'number')
+      throw new TypeError('Path must lead to a number');
     v += Number(amount);
     return this.set(path, v);
   }
@@ -109,6 +109,8 @@ class Database extends EventEmitter {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     let v = this.get(path);
+    if (typeof v !== 'number')
+      throw new TypeError('Path must lead to a number');
     v -= Number(amount);
     return this.set(path, v);
   }
