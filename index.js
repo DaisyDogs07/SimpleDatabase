@@ -24,7 +24,7 @@ class Database extends EventEmitter {
     super();
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
-    if (typeof options !== 'object')
+    if (typeOf(options) !== 'an object')
       throw new TypeError('Options must be an object');
     if (typeof options.spaces !== 'number')
       throw new TypeError('Spaces option must be a number');
