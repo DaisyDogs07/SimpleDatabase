@@ -52,6 +52,9 @@ class Database extends EventEmitter {
       get FilePath() {
         return filePath;
       },
+      set FilePath(location) {
+        return this.moveTo(location);
+      },
       /**
        * The amount of spaces in the Database file. Setting this value will update the Database file
        */
