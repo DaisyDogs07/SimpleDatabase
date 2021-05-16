@@ -75,6 +75,10 @@ class Database extends EventEmitter {
       }
     });
     fs.writeFileSync(filePath, JSON.stringify(this.read(), null, Number(this.spaces)));
+    this.history = [this.read()];
+    this.on('change', (path, oldData, newData) => {
+      this.history.unshift(newData);
+    });
   }
   toString() {
     return fs.readFileSync(this.FilePath, 'utf8');
