@@ -197,9 +197,8 @@ class Database extends EventEmitter {
    * Finds a JSON key
    * @param {string} Path The scope of where to look
    * @param {Function} fn The function to test with
-   * @param {*} thisArg The value to use as 'this' when executing fn
    */
-   find(path, fn, thisArg = this) {
+   find(path, fn) {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     if (typeof fn !== 'function')
@@ -207,8 +206,6 @@ class Database extends EventEmitter {
     let obj = this.get(path);
     if (typeOf(obj) !== 'an object')
       throw new TypeError('Path must lead to an object');
-    if (thisArg !== undefined && thisArg !== null)
-      fn = fn.bind(thisArg);
     for (const [k, v] of Object.entries(obj)) {
       if (fn(v, k))
         return v;
@@ -219,9 +216,8 @@ class Database extends EventEmitter {
    * Same as find() except it returns an array
    * @param {string} Path The scope of where to look
    * @param {Function} fn The function to test with
-   * @param {*} thisArg The value to use as 'this' when executing fn
    */
-  findAll(path, fn, thisArg = this) {
+  findAll(path, fn) {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     if (typeof fn !== 'function')
@@ -229,8 +225,6 @@ class Database extends EventEmitter {
     let obj = this.get(path);
     if (typeof obj !== 'object' || obj === null)
       throw new TypeError('Path must lead to an object');
-    if (thisArg !== undefined && thisArg !== null)
-      fn = fn.bind(thisArg);
     let arr = [];
     for (const [k, v] of Object.entries(obj)) {
       if (fn(v, k))
