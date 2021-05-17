@@ -299,8 +299,6 @@ function typeOf(value) {
     );
 }
 function _set(path, value, obj) {
-  if (!obj)
-    return;
   let locations = path.split('.'),
     output = obj,
     ref = obj;
