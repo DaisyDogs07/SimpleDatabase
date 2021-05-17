@@ -204,11 +204,11 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (typeof fn !== 'function')
       throw new TypeError('fn must be a function');
-    if (thisArg !== undefined && thisArg !== null)
-      fn = fn.bind(thisArg);
     let obj = this.get(path);
     if (typeOf(obj) !== 'an object')
       throw new TypeError('Path must lead to an object');
+    if (thisArg !== undefined && thisArg !== null)
+      fn = fn.bind(thisArg);
     for (const [k, v] of Object.entries(obj)) {
       if (fn(v, k))
         return v;
@@ -226,12 +226,12 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (typeof fn !== 'function')
       throw new TypeError('fn must be a function');
-    if (thisArg !== undefined && thisArg !== null)
-      fn = fn.bind(thisArg);
     let obj = this.get(path);
     if (typeof obj !== 'object' || obj === null)
       throw new TypeError('Path must lead to an object');
-      arr = [];
+    if (thisArg !== undefined && thisArg !== null)
+      fn = fn.bind(thisArg);
+    let arr = [];
     for (const [k, v] of Object.entries(obj)) {
       if (fn(v, k))
         arr[arr.length] = v;
