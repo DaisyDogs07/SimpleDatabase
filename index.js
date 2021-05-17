@@ -199,7 +199,7 @@ class Database extends EventEmitter {
    * @param {Function} fn The function to test with
    * @param {*} thisArg The value to use as 'this' when executing fn
    */
-   find(path, fn, thisArg) {
+   find(path, fn, thisArg = this) {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     if (typeof fn !== 'function')
@@ -221,7 +221,7 @@ class Database extends EventEmitter {
    * @param {Function} fn The function to test with
    * @param {*} thisArg The value to use as 'this' when executing fn
    */
-  findAll(path, fn, thisArg) {
+  findAll(path, fn, thisArg = this) {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     if (typeof fn !== 'function')
