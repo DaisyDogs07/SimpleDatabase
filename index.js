@@ -62,7 +62,7 @@ class Database extends EventEmitter {
       this.history.unshift(newData);
     });
   }
-  setSpaces(num) {
+  setSpaces(num = 2) {
     num = Number(num);
     if (!num && num !== 0)
       throw new TypeError("Cannot set property 'spaces' to " + typeOf(num));
