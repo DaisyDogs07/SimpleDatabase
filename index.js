@@ -256,6 +256,7 @@ class Database extends EventEmitter {
     fs.writeFileSync(database.filePath, JSON.stringify(this.read(), null, this.spaces));
     if (deleteFile)
       fs.unlinkSync(this.filePath);
+    database.history = this.history;
     return Object.assign(this, database);
   }
   static get Database() {
