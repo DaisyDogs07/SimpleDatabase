@@ -4,6 +4,9 @@
   "main": "index.js",
   "author": "DaisyDogs07",
   "license": "ISC",
+  "scripts": {
+    "test": "node tests/test"
+  },
   "engines": {
     "node": ">=7.0.0"
   },

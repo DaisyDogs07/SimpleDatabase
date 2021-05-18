@@ -48,42 +48,34 @@ class Database extends EventEmitter {
       });
     if (!fs.existsSync(filePath))
       fs.closeSync(fs.openSync(filePath, 'w'));
-    Object.assign(this, {
-      get FilePath() {
-        return filePath;
-      },
-      set FilePath(location) {
-        return this.moveTo(location);
-      },
-      /**
-       * The amount of spaces in the Database file. Setting this value will update the Database file
-       */
-      get spaces() {
-        return options.spaces;
-      },
-      set spaces(num) {
-        if (!Number(num) && Number(num) !== 0)
-          throw new TypeError("Cannot set property 'spaces' to " + typeOf(num));
-        num = Number(num);
-        if (num < 0)
-          num = 0;
-        if (num > 4)
-          num = 4;
-        let data = this.read();
-        fs.writeFileSync(this.FilePath, JSON.stringify(this.read(), null, num));
-        this.emit('change', null, this.read(), data);
-        options.spaces = num;
-        return num;
-      }
-    });
+    /**
+     * The path to the Database file
+     */
+    this.filePath = filePath;
+    /**
+     * The amount of spaces in the Database file
+     */
+    this.spaces = options.spaces;
     fs.writeFileSync(filePath, JSON.stringify(this.read(), null, Number(this.spaces)));
     this.history = [this.read()];
     this.on('change', (path, oldData, newData) => {
       this.history.unshift(newData);
     });
   }
+  setSpaces(num) {
+    num = Number(num);
+    if (!num && num !== 0)
+      throw new TypeError("Cannot set property 'spaces' to " + typeOf(num));
+    if (num < 0)
+      num = 0;
+    if (num > 4)
+      num = 4;
+    fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, num));
+    this.spaces = num;
+    return num;
+  }
   toString() {
-    return fs.readFileSync(this.FilePath, 'utf8');
+    return fs.readFileSync(this.filePath, 'utf8');
   }
   /**
    * Adds a specified amount to the JSON key
@@ -146,7 +138,7 @@ class Database extends EventEmitter {
       if (typeof value !== 'object' || value === null)
         throw new TypeError('Cannot set JSON to ' + typeOf(value));
       this.emit('change', path, this.read(), value);
-      fs.writeFileSync(this.FilePath, JSON.stringify(value, null, this.spaces));
+      fs.writeFileSync(this.filePath, JSON.stringify(value, null, this.spaces));
       return this;
     }
     if (typeof path !== 'string')
@@ -159,7 +151,7 @@ class Database extends EventEmitter {
       let data = this.read();
       data = _set(path, value, data);
       this.emit('change', path, this.read(), data);
-      fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces));
+      fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
     }
     return this;
   }
@@ -186,7 +178,7 @@ class Database extends EventEmitter {
       if (!removed)
         return false;
       this.emit('change', p, this.read(), data);
-      fs.writeFileSync(this.FilePath, JSON.stringify(data, null, this.spaces));
+      fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
       return true;
     } catch (e) {
       console.error(e);
@@ -238,7 +230,7 @@ class Database extends EventEmitter {
    * Reads the JSON Object from the database file
    */
   read() {
-    let data = fs.readFileSync(this.FilePath, 'utf8');
+    let data = fs.readFileSync(this.filePath, 'utf8');
     return data ? JSON.parse(data) : {};
   }
   /**
@@ -247,7 +239,7 @@ class Database extends EventEmitter {
   clear() {
     if (this.toString() !== '{}') {
       this.emit('change', null, this.read(), {});
-      fs.writeFileSync(this.FilePath, '{}');
+      fs.writeFileSync(this.filePath, '{}');
     }
   }
   /**
@@ -261,9 +253,9 @@ class Database extends EventEmitter {
     const database = new Database(location, {
       spaces: this.spaces
     });
-    fs.writeFileSync(database.FilePath, JSON.stringify(this.read(), null, this.spaces));
+    fs.writeFileSync(database.filePath, JSON.stringify(this.read(), null, this.spaces));
     if (deleteFile)
-      fs.unlinkSync(this.FilePath);
+      fs.unlinkSync(this.filePath);
     return Object.assign(this, database);
   }
   static get Database() {
