@@ -62,6 +62,10 @@ class Database extends EventEmitter {
       this.history.unshift(newData);
     });
   }
+  /**
+   * Sets the amount of spaces the file is formatted with
+   * @param {?number} Num The amount of spaces
+   */
   setSpaces(num = 2) {
     num = Number(num);
     if (!num && num !== 0)
@@ -225,6 +229,17 @@ class Database extends EventEmitter {
     return arr.length === 0
       ? undefined
       : arr;
+  }
+  /**
+   * Checks if a key is present in the Database
+   * @param {string} Path The path to the JSON key
+   */
+  has(path) {
+    if (!path)
+      throw new TypeError('Missing JSON path');
+    if (typeof path !== 'string')
+      throw new TypeError('Path must be a string');
+    return this.get(path) !== undefined;
   }
   /**
    * Reads the JSON Object from the database file
