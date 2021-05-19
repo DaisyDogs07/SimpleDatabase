@@ -139,7 +139,7 @@ class Database extends EventEmitter {
    */
   set(path, value) {
     if (path === '') {
-      if (typeof value !== 'object' || value === null)
+      if (typeOf(value) !== 'an object')
         throw new TypeError('Cannot set JSON to ' + typeOf(value));
       this.emit('change', path, this.read(), value);
       fs.writeFileSync(this.filePath, JSON.stringify(value, null, this.spaces));
@@ -219,7 +219,7 @@ class Database extends EventEmitter {
     if (typeof fn !== 'function')
       throw new TypeError('fn must be a function');
     let obj = this.get(path);
-    if (typeof obj !== 'object' || obj === null)
+    if (typeOf(obj) !== 'an object')
       throw new TypeError('Path must lead to an object');
     let arr = [];
     for (const [k, v] of Object.entries(obj)) {
