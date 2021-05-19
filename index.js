@@ -148,7 +148,7 @@ class Database extends EventEmitter {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     if (value === undefined)
-      throw new TypeError("Value cannot be 'undefined'");
+      return this;
     if (typeof value === 'function')
       value = value.toString();
     if (this.get(path) !== value) {
