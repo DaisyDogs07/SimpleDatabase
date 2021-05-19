@@ -64,19 +64,19 @@ class Database extends EventEmitter {
   }
   /**
    * Sets the amount of spaces the file is formatted with
-   * @param {?number} Num The amount of spaces
+   * @param {?number} Amount The amount of spaces
    */
-  setSpaces(num = 2) {
-    num = Number(num);
-    if (!num && num !== 0)
-      throw new TypeError("Cannot set property 'spaces' to " + typeOf(num));
-    if (num < 0)
-      num = 0;
-    if (num > 4)
-      num = 4;
-    fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, num));
-    this.spaces = num;
-    return num;
+  setSpaces(amount = 2) {
+    amount = Number(amount);
+    if (!amount && amount !== 0)
+      throw new TypeError("Spaces cannot be set to " + typeOf(amount) === 'a number' ? amount : typeOf(amount));
+    if (amount < 0)
+      amount = 0;
+    if (amount > 4)
+      amount = 4;
+    fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, amount));
+    this.spaces = amount;
+    return amount;
   }
   toString() {
     return fs.readFileSync(this.filePath, 'utf8');
@@ -303,7 +303,7 @@ function typeOf(value) {
         : 'a '
     ) + (
       value === null
-        ? 'null'
+        ? value
         : typeof value
     );
 }
