@@ -153,7 +153,10 @@ class Database extends EventEmitter {
       return this;
     if (typeof value === 'function')
       value = value.toString();
-    if (this.get(path) !== value) {
+    let v = this.get(path);
+    if (v !== value) {
+      if ((typeOf(v) === 'an object' || typeOf(v) === 'an array') && (typeOf(value) === 'an object' || typeOf(value) === 'an array') && JSON.stringify(v) === JSON.stringify(value))
+        return this;
       let data = this.read();
       data = _set(path, value, data);
       this.emit('change', path, this.read(), data);
@@ -304,7 +307,9 @@ function typeOf(value) {
     ) + (
       value === null
         ? value
-        : typeof value
+        : value instanceof Array
+          ? 'array'
+          : typeof value
     );
 }
 function _set(path, value, obj) {
