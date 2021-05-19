@@ -141,6 +141,8 @@ class Database extends EventEmitter {
     if (path === '') {
       if (typeOf(value) !== 'an object')
         throw new TypeError('Cannot set JSON to ' + typeOf(value));
+      if (this.toString() === JSON.stringify(value, null, this.spaces))
+        return this;
       this.emit('change', path, this.read(), value);
       fs.writeFileSync(this.filePath, JSON.stringify(value, null, this.spaces));
       return this;
@@ -168,7 +170,7 @@ class Database extends EventEmitter {
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (this.get(path) === undefined)
+    if (!this.has(path))
       return true;
     let p = path;
     path = path.split('.');
@@ -246,7 +248,12 @@ class Database extends EventEmitter {
    */
   read() {
     let data = fs.readFileSync(this.filePath, 'utf8');
-    return data ? JSON.parse(data) : {};
+    try {
+      data = JSON.parse(data);
+    } catch {
+      data = {};
+    }
+    return data;
   }
   /**
    * Clears the Database file. Use with caution
