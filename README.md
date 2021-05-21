@@ -60,15 +60,19 @@ const database = new Database();
 * **fn:** The function to test with
 * **Returns:** An array of values that succeeded in the test, 'undefined' if none were successful
 
-
 ### read()
 #### Reads the JSON Object from the database file
-* **Returns:** object
+* **Returns:** The JSON object
 
 ### moveTo(location\[, deleteFile\])
 #### Moves the Database to a new file
 * **Location:** The location of the new file
 * **DeleteFile:** Whether to delete the previous file
+* **Returns:** A reference to the Database
+
+### setSpaces(\[amount\])
+#### Sets he amount of spaces the file is formatted with
+* **amount:** The amount of spaces
 * **Returns:** A reference to the Database
 
 ## Events

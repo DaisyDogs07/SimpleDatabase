@@ -57,6 +57,9 @@ class Database extends EventEmitter {
      */
     this.spaces = options.spaces;
     fs.writeFileSync(filePath, JSON.stringify(this.read(), null, Number(this.spaces)));
+    /**
+     * The history of all changes
+     */
     this.history = [this.read()];
     this.on('change', (path, oldData, newData) => {
       this.history.unshift(newData);
@@ -76,7 +79,7 @@ class Database extends EventEmitter {
       amount = 4;
     fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, amount));
     this.spaces = amount;
-    return amount;
+    return this;
   }
   toString() {
     return fs.readFileSync(this.filePath, 'utf8');
@@ -248,6 +251,7 @@ class Database extends EventEmitter {
   }
   /**
    * Reads the JSON Object from the database file
+   * @private
    */
   read() {
     let data = fs.readFileSync(this.filePath, 'utf8');
@@ -292,7 +296,7 @@ function typeOf(value) {
       ? value === null
         ? ''
         : 'an '
-      : typeof value === 'undefined'
+      : value === undefined
         ? ''
         : 'a '
     ) + (
