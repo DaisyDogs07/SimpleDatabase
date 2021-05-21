@@ -284,15 +284,6 @@ class Database extends EventEmitter {
     database.history = this.history;
     return Object.assign(this, database);
   }
-  static get Database() {
-    return Database;
-  }
-  static get DatabaseOptions() {
-    return DatabaseOptions;
-  }
-  static get default() {
-    return Database;
-  }
 }
 
 function typeOf(value) {
@@ -336,3 +327,6 @@ function _get(path, obj) {
 }
 
 module.exports = Database;
+module.exports.Database = Database;
+module.exports.DatabaseOptions = DatabaseOptions;
+module.exports.default = Database;
