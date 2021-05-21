@@ -251,7 +251,6 @@ class Database extends EventEmitter {
   }
   /**
    * Reads the JSON Object from the database file
-   * @private
    */
   read() {
     let data = fs.readFileSync(this.filePath, 'utf8');
