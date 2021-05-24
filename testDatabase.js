@@ -78,7 +78,7 @@ listener(JSON.stringify(database.read()));
 expectedValue = JSON.stringify(database.read(), null, 2);
 listener(database.toString());
 
-// Setting up find(), And fildAll()
+// Setting up find(), And findAll()
 database.set('obj', {
   nest1: {
     nest2: {
@@ -89,6 +89,7 @@ database.set('obj', {
   }
 });
 
+// Testing find(), And findAll()
 expectedValue = JSON.stringify(database.get('obj'));
 listener(JSON.stringify(database.find('', v => v && v.nest1)));
 
