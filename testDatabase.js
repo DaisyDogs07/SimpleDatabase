@@ -12,14 +12,15 @@ if (database.spaces !== 2)
 
 database.clear(); // Get rid of unwanted data
 
-// Setting up tests for add(), sub(), set(), And get()
+// Setting up tests for add(), sub(), set(), delete(), And get()
 database.set('set1', '')
   .set('set2', 1)
   .set('set3', [])
   .set('set4', {})
   .set('set5', null)
   .set('add', 1)
-  .set('sub', 3);
+  .set('sub', 3)
+  .set('delete', "Oh, No! I'm gonna get deleted!");
 
 // Testing add(), And sub()
 database.add('add')
@@ -28,11 +29,16 @@ database.add('add')
 database.sub('sub')
   .sub('sub', 2);
 
+// Testing delete()
+const deleted = database.delete('delete');
+if (!deleted || database.has('delete'))
+  throw new TypeError('delete() failed');
+
 let listener = () => {
   throw new TypeError('Change event fired when not supposed to');
 }
 
-// Testing change event (While also testing set(), add(), And sub())
+// Testing change event (While also testing set(), delete(), add(), And sub())
 database.on('change', listener);
 
 database.set('set1', '')
@@ -41,6 +47,8 @@ database.set('set1', '')
   .set('set4', {})
   .set('set5', null)
   .set('set6', undefined);
+
+database.delete('delete');
 
 database.add('add', 0)
   .sub('sub', 0);

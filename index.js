@@ -1,3 +1,5 @@
+'use strict';
+
 const fs = require('fs'),
   path = require('path'),
   {EventEmitter} = require('events');
@@ -67,7 +69,7 @@ class Database extends EventEmitter {
         return _onchange;
       },
       set(fn) {
-        if (typeOf(fn) !== 'a function' && fn !== undefined)
+        if (fn && typeof fn !== 'function')
           throw new TypeError('Onchange must be a function');
         _onchange = fn;
         return fn;
@@ -76,7 +78,7 @@ class Database extends EventEmitter {
     });
     this.on('change', (path, oldData, newData) => {
       this.history.unshift(newData);
-      if (_onchange !== undefined)
+      if (_onchange)
         _onchange(path, oldData, newData);
     });
   }
@@ -86,7 +88,7 @@ class Database extends EventEmitter {
    */
   setSpaces(amount = 2) {
     amount = Number(amount);
-    if (!amount && amount !== 0)
+    if ((!amount && amount !== 0) || amount === Infinity || amount === -Infinity)
       throw new TypeError("Spaces cannot be set to " + typeOf(amount) === 'a number' ? amount : typeOf(amount));
     if (amount < 0)
       amount = 0;
@@ -111,8 +113,8 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
-    if (amount === Infinity)
-      throw new TypeError('Amount connot be Infinity');
+    if ((!amount && amount !== 0) || amount === Infinity || amount === -Infinity)
+      throw new TypeError(`Amount connot be ${amount}`);
     let v = this.get(path);
     if (typeof v !== 'number')
       throw new TypeError('Path must lead to a number');
@@ -131,8 +133,8 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
-    if (amount === Infinity)
-      throw new TypeError('Amount connot be Infinity');
+    if ((!amount && amount !== 0) || amount === Infinity || amount === -Infinity)
+      throw new TypeError(`Amount connot be ${amount}`);
     let v = this.get(path);
     if (typeof v !== 'number')
       throw new TypeError('Path must lead to a number');
@@ -170,7 +172,7 @@ class Database extends EventEmitter {
     if (value === undefined)
       return this;
     if (typeof value === 'function')
-      value = value.toString();
+      throw new TypeError('Value cannot be a function');
     let v = this.get(path);
     if (v !== value) {
       if ((typeOf(v) === 'an object' || typeOf(v) === 'an array') && (typeOf(value) === 'an object' || typeOf(value) === 'an array') && JSON.stringify(v) === JSON.stringify(value))
@@ -193,22 +195,16 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (!this.has(path))
       return true;
-    let p = path;
-    path = path.split('.');
-    path.forEach((v, i) => {
-      path[i] = "['" + v + "']";
-    });
-    path = path.join('');
     const data = this.read();
     try {
-      let removed = eval(`delete data${path}`);
+      let [removed, newData] = _delete(path, data);
       if (!removed)
         return false;
-      this.emit('change', p, this.read(), data);
-      fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
+      this.emit('change', path, this.read(), newData);
+      fs.writeFileSync(this.filePath, JSON.stringify(newData, null, this.spaces));
       return true;
     } catch (e) {
-      console.error(e);
+      this.emit('error', e);
       return false;
     }
   }
@@ -274,7 +270,7 @@ class Database extends EventEmitter {
     } catch {
       data = {};
     }
-    return data;
+    return new Object(data);
   }
   /**
    * Clears the Database file. Use with caution
@@ -321,27 +317,33 @@ function typeOf(value) {
           : typeof value
     );
 }
-function _set(path, value, obj) {
-  let locations = path.split('.'),
-    output = obj,
-    ref = obj;
+function _delete(path, obj) {
+  let locations = path.split('.');
   for (let i = 0; i < locations.length - 1; i++) {
-    if (ref[locations[i]] === undefined)
-      ref = ref[locations[i]] = {};
-    else ref = ref[locations[i]];
+    if (obj[locations[i]] === undefined)
+      obj = obj[locations[i]] = {};
+    else obj = obj[locations[i]];
   }
-  ref[locations[locations.length - 1]] = value;
-  return output;
+  return [delete obj[locations[locations.length - 1]], obj];
+}
+function _set(path, value, obj) {
+  let locations = path.split('.');
+  for (let i = 0; i < locations.length - 1; i++) {
+    if (obj[locations[i]] === undefined)
+      obj = obj[locations[i]] = {};
+    else obj = obj[locations[i]];
+  }
+  obj[locations[locations.length - 1]] = value;
+  return obj;
 }
 function _get(path, obj) {
-  let locations = path.split('.'),
-    ref = obj;
+  let locations = path.split('.');
   for (let i = 0; i < locations.length - 1; i++) {
-    ref = ref[locations[i]];
-    if (ref === undefined)
+    obj = obj[locations[i]];
+    if (obj === undefined)
       return;
   }
-  return ref[locations[locations.length - 1]];
+  return obj[locations[locations.length - 1]];
 }
 
 module.exports = Database;
