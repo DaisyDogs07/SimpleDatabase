@@ -61,22 +61,8 @@ class Database extends EventEmitter {
      * The history of all changes
      */
     this.history = [this.read()];
-    let _onchange;
-    Object.defineProperty(this, 'onchange', {
-      get() {
-        return _onchange;
-      },
-      set(fn) {
-        if (typeOf(fn) !== 'a function' && fn !== undefined)
-          throw new TypeError('Onchange must be a function');
-        _onchange = fn;
-        return fn;
-      }
-    });
     this.on('change', (path, oldData, newData) => {
       this.history.unshift(newData);
-      if (_onchange !== undefined)
-        _onchange(path, oldData, newData);
     });
   }
   /**
