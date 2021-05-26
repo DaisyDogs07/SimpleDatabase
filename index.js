@@ -318,13 +318,15 @@ function typeOf(value) {
     );
 }
 function _delete(path, obj) {
-  let locations = path.split('.');
+  let locations = path.split('.'),
+    output = obj,
+    ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
-    if (obj[locations[i]] === undefined)
-      obj = obj[locations[i]] = {};
-    else obj = obj[locations[i]];
+    if (ref[locations[i]] === undefined)
+      ref = ref[locations[i]] = {};
+    else ref = ref[locations[i]];
   }
-  return [delete obj[locations[locations.length - 1]], obj];
+  return [delete ref[locations[locations.length - 1]], output];
 }
 function _set(path, value, obj) {
   let locations = path.split('.'),
