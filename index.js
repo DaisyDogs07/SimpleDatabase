@@ -327,23 +327,26 @@ function _delete(path, obj) {
   return [delete obj[locations[locations.length - 1]], obj];
 }
 function _set(path, value, obj) {
-  let locations = path.split('.');
+  let locations = path.split('.'),
+    output = obj,
+    ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
-    if (obj[locations[i]] === undefined)
-      obj = obj[locations[i]] = {};
-    else obj = obj[locations[i]];
+    if (ref[locations[i]] === undefined)
+      ref = ref[locations[i]] = {};
+    else ref = ref[locations[i]];
   }
-  obj[locations[locations.length - 1]] = value;
-  return obj;
+  ref[locations[locations.length - 1]] = value;
+  return output;
 }
 function _get(path, obj) {
-  let locations = path.split('.');
+  let locations = path.split('.'),
+    ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
-    obj = obj[locations[i]];
-    if (obj === undefined)
+    ref = ref[locations[i]];
+    if (ref === undefined)
       return;
   }
-  return obj[locations[locations.length - 1]];
+  return ref[locations[locations.length - 1]];
 }
 
 module.exports = Database;
