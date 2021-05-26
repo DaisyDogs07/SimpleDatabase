@@ -71,7 +71,8 @@ class Database extends EventEmitter {
           throw new TypeError('Onchange must be a function');
         _onchange = fn;
         return fn;
-      }
+      },
+      configurable: true
     });
     this.on('change', (path, oldData, newData) => {
       this.history.unshift(newData);
