@@ -1,14 +1,27 @@
+'use strict';
+
 const Database = require('./'),
   fs = require('fs'),
   database = new Database(__dirname + '/database');
 
+// Testing new Database()
+try {
+  new Database(_dirname + '/shouldFail.js');
+  throw new TypeError('new Database() failed');
+} catch (e) {
+  if (e.toString() === 'new Database() failed') {
+    console.error(e);
+    process.exit(1);
+  }
+}
+
 // Testing filePath
 if (database.filePath !== (__dirname + '/database.json'))
-  throw new TypeError('FilePath property is incorrect');
+  throw new TypeError('FilePath is incorrect');
 
 // Testing spaces
 if (database.spaces !== 2)
-  throw new TypeError('Spaces property is incorrect');
+  throw new TypeError('Spaces is incorrect');
 
 database.clear(); // Get rid of unwanted data
 
@@ -54,6 +67,11 @@ database.add('add', 0)
   .sub('sub', 0);
 
 database.off('change', listener);
+
+database.set('set delete test', '');
+database.set('set delete test', undefined);
+if (database.has('set delete test'))
+  throw new TypeError('set() failed');
 
 listener = value => {
   if (value !== expectedValue)
@@ -132,9 +150,9 @@ let d = {
 };
 database.moveTo(__dirname + '/database1');
 if (fs.existsSync(d.filePath))
-  throw new TypeError(`moveTo() failed\nDidn't delete file when deleteFile was set to 'true'`);
+  throw new TypeError('moveTo() failed');
 if (d.str !== database.toString())
-  throw new TypeError(`moveTo() failed\nPrevious file contents: ${d.str}\nCurrent file contents: ${database.toString()}`);
+  throw new TypeError('moveTo() failed');
 
 d = {
   str: database.toString(),
@@ -142,11 +160,11 @@ d = {
 };
 database.moveTo(__dirname + '/database2', false);
 if (!fs.existsSync(d.filePath))
-  throw new TypeError(`moveTo() failed\nDeleted file when deleteFile was set to 'false'`);
+  throw new TypeError('moveTo() failed');
 if (d.str !== database.toString())
-  throw new TypeError(`moveTo() failed\nPrevious file contents: ${d.str}\nCurrent file contents: ${database.toString()}`);
+  throw new TypeError('moveTo() failed');
 
-// Removing all Databases for cleanup
+// Remove all Databases for cleanup
 fs.unlinkSync(database.filePath);
 fs.unlinkSync(d.filePath);
 

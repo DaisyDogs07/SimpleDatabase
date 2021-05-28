@@ -89,7 +89,7 @@ class Database extends EventEmitter {
   setSpaces(amount = 2) {
     amount = Number(amount);
     if ((!amount && amount !== 0) || amount === Infinity || amount === -Infinity)
-      throw new TypeError("Spaces cannot be set to " + typeOf(amount) === 'a number' ? amount : typeOf(amount));
+      throw new TypeError(`Spaces cannot be ${amount}`);
     if (amount < 0)
       amount = 0;
     if (amount > 4)
@@ -107,7 +107,7 @@ class Database extends EventEmitter {
    * @param {?number} Amount The amount to add
    */
   add(path, amount = 1) {
-    if (!path)
+    if (path === undefined)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
@@ -127,7 +127,7 @@ class Database extends EventEmitter {
    * @param {?number} Amount The amount to subtract
    */
   sub(path, amount = 1) {
-    if (!path)
+    if (path === undefined)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
@@ -169,8 +169,12 @@ class Database extends EventEmitter {
     }
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (value === undefined)
+    if (value === undefined) {
+      if (this.has(path))
+        this.delete(path);
       return this;
+    }
+
     if (typeof value === 'function')
       throw new TypeError('Value cannot be a function');
     let v = this.get(path);
@@ -189,19 +193,17 @@ class Database extends EventEmitter {
    * @param {string} Path The path to the JSON key
    */
   delete(path) {
-    if (!path)
+    if (path === undefined)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     if (!this.has(path))
       return true;
-    const data = this.read();
+    let data = this.read();
     try {
-      let [removed, newData] = _delete(path, data);
-      if (!removed)
-        return false;
-      this.emit('change', path, this.read(), newData);
-      fs.writeFileSync(this.filePath, JSON.stringify(newData, null, this.spaces));
+      data = _delete(path, data);
+      this.emit('change', path, this.read(), data);
+      fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
       return true;
     } catch (e) {
       this.emit('error', e);
@@ -213,19 +215,21 @@ class Database extends EventEmitter {
    * @param {string} Path The scope of where to look
    * @param {Function} fn The function to test with
    */
-   find(path, fn) {
+  find(path, fn) {
+    if (path === undefined)
+      throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (typeof fn !== 'function')
-      throw new TypeError('fn must be a function');
     let obj = this.get(path);
     if (typeOf(obj) !== 'an object')
       throw new TypeError('Path must lead to an object');
+    if (typeof fn !== 'function')
+      throw new TypeError('fn must be a function');
     for (const [k, v] of Object.entries(obj)) {
       if (fn(v, k))
         return v;
     }
-    return undefined;
+    return;
   }
   /**
    * Same as find() except it returns an array
@@ -233,21 +237,23 @@ class Database extends EventEmitter {
    * @param {Function} fn The function to test with
    */
   findAll(path, fn) {
+    if (path === undefined)
+      throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (typeof fn !== 'function')
-      throw new TypeError('fn must be a function');
     let obj = this.get(path);
     if (typeOf(obj) !== 'an object')
       throw new TypeError('Path must lead to an object');
+    if (typeof fn !== 'function')
+      throw new TypeError('fn must be a function');
     let arr = [];
     for (const [k, v] of Object.entries(obj)) {
       if (fn(v, k))
         arr[arr.length] = v;
     }
-    return arr.length === 0
-      ? undefined
-      : arr;
+    if (arr.length !== 0)
+      return arr;
+    return;
   }
   /**
    * Checks if a key is present in the Database
@@ -285,8 +291,10 @@ class Database extends EventEmitter {
    * Moves the Database to a new file
    */
   moveTo(location, deleteFile = true) {
-    if (!location)
+    if (location === undefined)
       throw new TypeError('No location provided');
+    if (typeof location !== 'string')
+      throw new TypeError('Location must be a string');
     if (typeof deleteFile !== 'boolean')
       throw new TypeError('DeleteFile must be boolean');
     const database = new Database(location, {
@@ -296,7 +304,8 @@ class Database extends EventEmitter {
     if (deleteFile)
       fs.unlinkSync(this.filePath);
     database.history = this.history;
-    return Object.assign(this, database);
+    Object.assign(this, database);
+    return this;
   }
 }
 
@@ -319,18 +328,17 @@ function typeOf(value) {
 }
 function _delete(path, obj) {
   let locations = path.split('.'),
-    output = obj,
     ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
     if (ref[locations[i]] === undefined)
       ref = ref[locations[i]] = {};
     else ref = ref[locations[i]];
   }
-  return [delete ref[locations[locations.length - 1]], output];
+  delete ref[locations[locations.length - 1]];
+  return obj;
 }
 function _set(path, value, obj) {
   let locations = path.split('.'),
-    output = obj,
     ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
     if (ref[locations[i]] === undefined)
@@ -338,7 +346,7 @@ function _set(path, value, obj) {
     else ref = ref[locations[i]];
   }
   ref[locations[locations.length - 1]] = value;
-  return output;
+  return obj;
 }
 function _get(path, obj) {
   let locations = path.split('.'),
