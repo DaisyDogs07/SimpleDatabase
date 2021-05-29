@@ -89,7 +89,7 @@ class Database extends EventEmitter {
   setSpaces(amount = 2) {
     amount = Number(amount);
     if ((!amount && amount !== 0) || amount === Infinity || amount === -Infinity)
-      throw new TypeError(`Spaces cannot be ${amount}`);
+      throw new TypeError(`Spaces cannot be ${typeof amount === 'number' ? amount ; typeOf(amount)}`);
     if (amount < 0)
       amount = 0;
     if (amount > 4)
@@ -114,7 +114,7 @@ class Database extends EventEmitter {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     if ((!amount && amount !== 0) || amount === Infinity || amount === -Infinity)
-      throw new TypeError(`Amount connot be ${amount}`);
+      throw new TypeError(`Amount connot be ${typeof amount === 'number' ? amount ; typeOf(amount)}`);
     let v = this.get(path);
     if (typeof v !== 'number')
       throw new TypeError('Path must lead to a number');
@@ -134,7 +134,7 @@ class Database extends EventEmitter {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     if ((!amount && amount !== 0) || amount === Infinity || amount === -Infinity)
-      throw new TypeError(`Amount connot be ${amount}`);
+      throw new TypeError(`Amount connot be ${typeof amount === 'number' ? amount ; typeOf(amount)}`);
     let v = this.get(path);
     if (typeof v !== 'number')
       throw new TypeError('Path must lead to a number');
