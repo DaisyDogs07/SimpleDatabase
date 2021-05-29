@@ -52,7 +52,7 @@ let listener = () => {
 }
 
 // Testing change event (While also testing set(), delete(), add(), And sub())
-database.on('change', listener);
+database.addListener('change', listener);
 
 database.set('set1', '')
   .set('set2', 1)
@@ -66,7 +66,7 @@ database.delete('delete');
 database.add('add', 0)
   .sub('sub', 0);
 
-database.off('change', listener);
+database.removeListener('change', listener);
 
 database.set('set delete test', '');
 database.set('set delete test', undefined);
