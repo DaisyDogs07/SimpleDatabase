@@ -273,7 +273,7 @@ class Database extends EventEmitter {
     let data = fs.readFileSync(this.filePath, 'utf8');
     try {
       data = JSON.parse(data);
-    } catch {
+    } catch (e) {
       data = {};
     }
     return new Object(data);
