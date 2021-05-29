@@ -18,7 +18,7 @@ class DatabaseOptions {
  */
 class Database extends EventEmitter {
   /**
-   * Makes a new database. If the file is not present, We'll make it for you
+   * Makes a new Database. If the file is not present, We'll make it for you
    * @param {?string} Location The path to the file
    * @param {DatabaseOptions | object} Options The options to give when creating the database
    */
@@ -155,7 +155,7 @@ class Database extends EventEmitter {
   /**
    * Sets a JSON key to the new value
    * @param {string} Path the path to the JSON key
-   * @param {any} Value The value to set
+   * @param Value The value to set
    */
   set(path, value) {
     if (path === '') {
@@ -279,7 +279,7 @@ class Database extends EventEmitter {
     return new Object(data);
   }
   /**
-   * Clears the Database file. Use with caution
+   * Clears the Database. Use with caution
    */
   clear() {
     if (this.toString() !== '{}') {
@@ -307,6 +307,12 @@ class Database extends EventEmitter {
     Object.assign(this, database);
     return this;
   }
+  entries() {
+    return Object.entries(this.read());
+  }
+  toJSON() {
+    return this.read();
+  }
 }
 
 function typeOf(value) {
@@ -330,9 +336,7 @@ function _delete(path, obj) {
   let locations = path.split('.'),
     ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
-    if (ref[locations[i]] === undefined)
-      ref = ref[locations[i]] = {};
-    else ref = ref[locations[i]];
+    ref = ref[locations[i]];
   }
   delete ref[locations[locations.length - 1]];
   return obj;
