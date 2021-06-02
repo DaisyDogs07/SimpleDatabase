@@ -51,13 +51,13 @@ const database = new Database();
 ### find(path, fn)
 #### Finds a JSON key
 * **Path:** The scope of where to look
-* **fn:** The function to test with
+* **Fn:** The function to test with
 * **Returns:** The value that succeeded in the test, 'undefined' if none were successful
 
 ### findAll(path, fn)
 #### Same as find() except it returns an array
 * **Path:** The scope of where to look
-* **fn:** The function to test with
+* **Fn:** The function to test with
 * **Returns:** An array of values that succeeded in the test, 'undefined' if none were successful
 
 ### read()
@@ -72,7 +72,7 @@ const database = new Database();
 
 ### setSpaces(\[amount\])
 #### Sets he amount of spaces the file is formatted with
-* **amount:** The amount of spaces
+* **Amount:** The amount of spaces
 * **Returns:** A reference to the Database
 
 ## Events
