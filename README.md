@@ -71,7 +71,7 @@ const database = new Database();
 * **Returns:** A reference to the Database
 
 ### setSpaces(\[amount\])
-#### Sets he amount of spaces the file is formatted with
+#### Sets the amount of spaces the file is formatted with
 * **Amount:** The amount of spaces
 * **Returns:** A reference to the Database
 
