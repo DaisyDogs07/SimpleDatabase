@@ -50,7 +50,6 @@ class Database extends EventEmitter {
       });
     if (!fs.existsSync(filePath))
       fs.closeSync(fs.openSync(filePath, 'w'));
-    fs.writeFileSync(filePath, JSON.stringify(this.read(), null, options.spaces));
     /**
      * The path to the Database file
      */
@@ -59,6 +58,7 @@ class Database extends EventEmitter {
      * The amount of spaces in the Database file
      */
     this.spaces = options.spaces;
+    fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, this.spaces));
     /**
      * The history of all changes
      */
