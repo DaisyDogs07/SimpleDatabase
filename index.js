@@ -34,6 +34,8 @@ class Database extends EventEmitter {
       options.spaces = 0;
     if (options.spaces > 4)
       options.spaces = 4;
+    if (location.endsWith('/'))
+      location += 'database';
     let loc = location.split('.');
     if (loc.length !== 1 && loc[loc.length - 1] !== 'json')
       throw new TypeError(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' file extension`);
@@ -43,7 +45,9 @@ class Database extends EventEmitter {
     delete dir[dir.length - 1];
     dir = dir.join('/');
     loc = location.replace(dir, '');
-    let filePath = `${path.resolve(dir)}/${loc}.json`;
+    dir = path.resolve(dir);
+    let filePath = `${dir}/${loc}.json`;
+    fs.accessSync(dir, fs.constants.W_OK);
     if (!fs.existsSync(dir))
       fs.mkdirSync(path.resolve(dir), {
         recursive: true
