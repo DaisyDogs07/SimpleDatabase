@@ -169,12 +169,6 @@ class Database extends EventEmitter {
     }
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    if (value === undefined) {
-      if (this.has(path))
-        this.delete(path);
-      return this;
-    }
-
     if (typeof value === 'function')
       throw new TypeError('Value cannot be a function');
     let v = this.get(path);
