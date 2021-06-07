@@ -14,6 +14,14 @@ try {
     process.exit(1);
   }
 }
+try {
+  const d = new Database(__dirname + '/utils/');
+  fs.unlinkSync(d.filePath);
+  fs.rmdirSync(d.filePath.replace('/database.json', ''));
+} catch (e) {
+  console.log(new TypeError('new Database() failed'));
+  process.exit(1);
+}
 
 // Testing filePath
 if (database.filePath !== (__dirname + '/database.json'))

@@ -34,6 +34,8 @@ class Database extends EventEmitter {
       options.spaces = 0;
     if (options.spaces > 4)
       options.spaces = 4;
+    if (location.endsWith('/'))
+      location += 'database';
     let loc = location.split('.');
     if (loc.length !== 1 && loc[loc.length - 1] !== 'json')
       throw new TypeError(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' file extension`);
@@ -58,7 +60,7 @@ class Database extends EventEmitter {
      * The amount of spaces in the Database file
      */
     this.spaces = options.spaces;
-    fs.writeFileSync(filePath, JSON.stringify(this.read(), null, Number(this.spaces)));
+    fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, this.spaces));
     /**
      * The history of all changes
      */
