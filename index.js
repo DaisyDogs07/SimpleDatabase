@@ -159,7 +159,7 @@ class Database extends EventEmitter {
    * @param {string} Path the path to the JSON key
    * @param Value The value to set
    */
-  set(path, value = {}) {
+  set(path, value) {
     if (path === '') {
       if (typeOf(value) !== 'an object')
         throw new TypeError('Cannot set JSON to ' + typeOf(value));
