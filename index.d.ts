@@ -19,8 +19,8 @@ declare module 'SimpleDatabase' {
     public setSpaces(amount?: number): this;
 
     //Readers
-    public find<V, K>(path: string, fn: (V: any, K: string) => boolean): V;
-    public findAll<V, K>(path: string, fn: (V: any, K: string) => boolean): V[];
+    public find(path: string, fn: (V: any, K: string) => boolean): any;
+    public findAll(path: string, fn: (V: any, K: string) => boolean): any[];
     private read(): object;
     public has(path: string): boolean;
     public entries(): [string, any][];
