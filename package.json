@@ -4,6 +4,7 @@
   "main": "index.js",
   "author": "DaisyDogs07",
   "license": "ISC",
+  "types": "index.d.ts",
   "scripts": {
     "install": "node testDatabase.js"
   },
@@ -18,5 +19,6 @@
   },
   "bugs": {
     "url": "https://github.com/DaisyDogs07/SimpleDatabase/issues"
-  }
+  },
+  "dependencies": {}
 }
