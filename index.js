@@ -309,6 +309,13 @@ class Database extends EventEmitter {
   toJSON() {
     return this.read();
   }
+  clone() {
+    const d = new Database(this.filePath, {
+      spaces: this.spaces
+    });
+    d.history = this.history;
+    return d;
+  }
 }
 
 function typeOf(value) {
