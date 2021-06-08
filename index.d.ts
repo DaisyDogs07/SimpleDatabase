@@ -8,8 +8,8 @@ declare module 'SimpleDatabase' {
     constructor(location?: string, options?: DatabaseOptions);
     public add(path: string, amount?: number): this;
     public sub(path: string, amount?: number): this;
-    public set(path: '', value: object): this;
     public set(path: string, value: any): this;
+    public set(path: '', value: object): this;
     public get(path?: string): object;
     public get(path: string): any;
     public delete(path: string): boolean;
