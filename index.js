@@ -324,7 +324,7 @@ function typeOf(value) {
       ? value === null
         ? ''
         : 'an '
-      : value === undefined
+      : value === undefined || typeof value === 'boolean'
         ? ''
         : 'a '
     ) + (
