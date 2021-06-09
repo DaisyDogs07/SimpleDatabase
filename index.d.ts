@@ -1,10 +1,10 @@
 declare module 'SimpleDatabase' {
   import {EventEmitter} from 'events';
-  export class DatabaseOptions {
+  class DatabaseOptions {
     constructor(spaces?: number);
     public spaces?: number;
   }
-  export class Database extends EventEmitter {
+  class Database extends EventEmitter {
     constructor(location?: string, options?: DatabaseOptions);
     //Modifiers
     public add(path: string, amount?: number): this;
@@ -37,7 +37,11 @@ declare module 'SimpleDatabase' {
 
     //Utils
     public clone(): this;
+
+    //Static
+    public static Database: typeof Database;
+    public static DatabaseOptions: typeof DatabaseOptions;
+    public static default: typeof Database;
   }
-  export const default: Database;
   export = Database;
 }
