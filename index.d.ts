@@ -37,9 +37,6 @@ declare module 'SimpleDatabase' {
 
     //Utils
     public clone(): this;
-    public static DatabaseOptions: typeof DatabaseOptions;
-    public static default: typeof Database;
-    public static Database: typeof Database;
   }
   export = Database;
 }
