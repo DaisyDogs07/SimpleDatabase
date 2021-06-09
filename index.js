@@ -313,7 +313,7 @@ class Database extends EventEmitter {
     const d = new Database(this.filePath, {
       spaces: this.spaces
     });
-    d.history = this.history;
+    d.history = new Array(this.history);
     return d;
   }
 }
