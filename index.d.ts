@@ -38,5 +38,6 @@ declare module 'SimpleDatabase' {
     //Utils
     public clone(): this;
   }
+  export const default: Database;
   export = Database;
 }
