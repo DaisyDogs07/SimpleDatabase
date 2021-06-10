@@ -11,7 +11,7 @@ declare module 'SimpleDatabase' {
     public sub(path: string, amount?: number): this;
     public set(path: string, value: any): this;
     public set(path: '', value: object): this;
-    public get(path?: string): object;
+    public get(path?: ''): object;
     public get(path: string): any;
     public delete(path: string): boolean;
     public clear(): void;
