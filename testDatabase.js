@@ -6,7 +6,7 @@ const Database = require('./'),
 
 // Testing new Database()
 try {
-  new Database(_dirname + '/shouldFail.js');
+  new Database(__dirname + '/shouldFail.js');
   throw new TypeError('new Database() failed');
 } catch (e) {
   if (e.toString() === 'new Database() failed') {
