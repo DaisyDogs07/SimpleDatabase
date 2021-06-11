@@ -2,7 +2,7 @@ declare module 'SimpleDatabase' {
   import {EventEmitter} from 'events';
   class DatabaseOptions {
     constructor(spaces?: number);
-    public spaces?: number;
+    public spaces: number;
   }
   class Database extends EventEmitter {
     constructor(location?: string, options?: DatabaseOptions);
