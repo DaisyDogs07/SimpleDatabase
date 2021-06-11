@@ -7,13 +7,9 @@ const Database = require('./'),
 // Testing new Database()
 try {
   new Database(__dirname + '/shouldFail.js');
-  throw new TypeError('new Database() failed');
-} catch (e) {
-  if (e.toString() === 'new Database() failed') {
-    console.error(e);
-    process.exit(1);
-  }
-}
+  console.log(new TypeError('new Database() failed'));
+  process.exit(1);
+} catch (e) {}
 try {
   const d = new Database(__dirname + '/utils/');
   fs.unlinkSync(d.filePath);
