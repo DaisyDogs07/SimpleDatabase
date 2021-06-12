@@ -2,7 +2,7 @@
 
 const Database = require('./'),
   fs = require('fs'),
-  database = new Database(__dirname + '/database');
+  database = new Database(__dirname + '/');
 
 // Testing new Database()
 try {
