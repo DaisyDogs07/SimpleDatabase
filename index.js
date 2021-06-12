@@ -356,14 +356,13 @@ function _set(path, value, obj) {
   return obj;
 }
 function _get(path, obj) {
-  let locations = path.split('.'),
-    ref = obj;
-  for (let i = 0; i < locations.length - 1; i++) {
-    ref = ref[locations[i]];
-    if (ref === undefined)
+  let locations = path.split('.');
+  for (let i = 0; i < locations.length; i++) {
+    obj = obj[locations[i]];
+    if (obj === undefined)
       return;
   }
-  return ref[locations[locations.length - 1]];
+  return obj;
 }
 
 module.exports = Database;
