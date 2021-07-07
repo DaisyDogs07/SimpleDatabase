@@ -1,12 +1,12 @@
 'use strict';
 
-const Database = require('./'),
-  fs = require('fs'),
+import Database = require('./');
+const fs = require('fs'),
   database = new Database(__dirname + '/');
 
 // Testing new Database()
 try {
-  new Database(__dirname + '/shouldFail.js');
+  new Database(__dirname + '/shouldFail.ts');
   console.log(new TypeError('new Database() failed'));
   process.exit(1);
 } catch (e) {}
@@ -51,7 +51,7 @@ const deleted = database.delete('delete');
 if (!deleted || database.has('delete'))
   throw new TypeError('delete() failed');
 
-let listener = () => {
+let listener: any = () => {
   throw new TypeError('Change event fired when not supposed to');
 }
 
@@ -83,7 +83,7 @@ listener = value => {
 }
 
 // Testing get()
-let expectedValue = '';
+let expectedValue: any = '';
 listener(database.get('set1'));
 
 expectedValue = 1;
@@ -141,7 +141,7 @@ listener(JSON.stringify(database.findAll('obj.nest1', v => v === 'Boo!')));
   '1'
 ].forEach(a => {
   expectedValue = JSON.stringify(database.read(), null, Number(a));
-  database.setSpaces(a);
+  database.setSpaces(Number(a));
   listener(database.toString());
   expectedValue = Number(a);
   listener(database.spaces);
