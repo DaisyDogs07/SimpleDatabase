@@ -215,7 +215,7 @@ class Database extends EventEmitter {
    * @param {string} Path The scope of where to look
    * @param {Function} fn The function to test with
    */
-  find(path: string, fn: (v: unknown, k: string) => any): any | undefined {
+  find(path: string, fn: (v: any, k: string) => any): any | undefined {
     if (path === undefined)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
@@ -236,7 +236,7 @@ class Database extends EventEmitter {
    * @param {string} Path The scope of where to look
    * @param {Function} fn The function to test with
    */
-  findAll(path: string, fn: (v: unknown, k: string) => any): any[] | undefined {
+  findAll(path: string, fn: (v: any, k: string) => any): any[] | undefined {
     if (path === undefined)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
