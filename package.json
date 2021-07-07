@@ -5,7 +5,7 @@
   "author": "DaisyDogs07",
   "license": "ISC",
   "scripts": {
-    "install": "node testDatabase.js"
+    "preinstall": "tsc index.ts testDatabase.ts && node testDatabase.js"
   },
   "engines": {
     "node": ">=7.0.0"
