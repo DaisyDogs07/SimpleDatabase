@@ -11,7 +11,7 @@ class DatabaseOptions {
   constructor(spaces = 2) {
     this.spaces = Number(spaces);
   }
-  public spaces: number;
+  spaces: number;
 }
 
 /**
@@ -85,14 +85,14 @@ class Database extends EventEmitter {
         _onchange(path, oldData, newData);
     });
   }
-  public filePath: string;
-  public history: object[];
-  public onchange: Function | undefined;
+  filePath: string;
+  history: object[];
+  onchange: Function | undefined;
   /**
    * Sets the amount of spaces the file is formatted with
    * @param {?number} Amount The amount of spaces
    */
-  public setSpaces(amount = 2) {
+  setSpaces(amount = 2) {
     amount = Number(amount);
     if ((!amount && amount !== 0) || amount === Infinity || amount === -Infinity)
       throw new TypeError(`Spaces cannot be ${typeof amount === 'number' ? amount : typeOf(amount)}`);
@@ -104,7 +104,7 @@ class Database extends EventEmitter {
     this.spaces = amount;
     return this;
   }
-  public toString(): string {
+  toString(): string {
     return fs.readFileSync(this.filePath, 'utf8');
   }
   /**
@@ -112,7 +112,7 @@ class Database extends EventEmitter {
    * @param {string} Path The path to the JSON key
    * @param {?number} Amount The amount to add
    */
-  public add(path: string, amount = 1): this {
+  add(path: string, amount = 1): this {
     if (path === undefined)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
@@ -132,7 +132,7 @@ class Database extends EventEmitter {
    * @param {string} Path The path to the JSON key
    * @param {?number} Amount The amount to subtract
    */
-  public sub(path: string, amount = 1): this {
+  sub(path: string, amount = 1): this {
     if (path === undefined)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
@@ -151,7 +151,7 @@ class Database extends EventEmitter {
    * Gets the specified JSON key
    * @param {?string} Path The path to the JSON key
    */
-  public get(path = ''): any {
+  get(path = ''): any {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     if (!path)
@@ -163,7 +163,7 @@ class Database extends EventEmitter {
    * @param {string} Path the path to the JSON key
    * @param Value The value to set
    */
-  public set(path: string, value: any): this {
+  set(path: string, value: any): this {
     if (path === '') {
       if (typeOf(value) !== 'an object')
         throw new TypeError('Cannot set JSON to ' + typeOf(value));
@@ -192,7 +192,7 @@ class Database extends EventEmitter {
    * Deletes a JSON key
    * @param {string} Path The path to the JSON key
    */
-  public delete(path: string): boolean {
+  delete(path: string): boolean {
     if (path === undefined)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
@@ -215,7 +215,7 @@ class Database extends EventEmitter {
    * @param {string} Path The scope of where to look
    * @param {Function} fn The function to test with
    */
-  public find(path: string, fn: (v: unknown, k: string) => any): any | undefined {
+  find(path: string, fn: (v: unknown, k: string) => any): any | undefined {
     if (path === undefined)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
@@ -236,7 +236,7 @@ class Database extends EventEmitter {
    * @param {string} Path The scope of where to look
    * @param {Function} fn The function to test with
    */
-  public findAll(path: string, fn: (v: unknown, k: string) => any): any[] | undefined {
+  findAll(path: string, fn: (v: unknown, k: string) => any): any[] | undefined {
     if (path === undefined)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
@@ -259,7 +259,7 @@ class Database extends EventEmitter {
    * Checks if a key is present in the Database
    * @param {string} Path The path to the JSON key
    */
-  public has(path: string): boolean {
+  has(path: string): boolean {
     if (!path)
       throw new TypeError('Missing JSON path');
     if (typeof path !== 'string')
@@ -269,7 +269,7 @@ class Database extends EventEmitter {
   /**
    * Reads the JSON Object from the database file
    */
-  private read(): object {
+  read(): object {
     let data = fs.readFileSync(this.filePath, 'utf8');
     try {
       data = JSON.parse(data);
@@ -281,7 +281,7 @@ class Database extends EventEmitter {
   /**
    * Clears the Database. Use with caution
    */
-  public clear(): void {
+  clear(): void {
     if (this.toString() !== '{}') {
       this.emit('change', null, this.read(), {});
       fs.writeFileSync(this.filePath, '{}');
@@ -290,7 +290,7 @@ class Database extends EventEmitter {
   /**
    * Moves the Database to a new file
    */
-  public moveTo(location: string, deleteFile = true) {
+  moveTo(location: string, deleteFile = true) {
     if (location === undefined)
       throw new TypeError('No location provided');
     if (typeof location !== 'string')
@@ -307,13 +307,13 @@ class Database extends EventEmitter {
     Object.assign(this, database);
     return this;
   }
-  public entries() {
+  entries() {
     return Object.entries(this.read());
   }
-  private toJSON() {
+  toJSON() {
     return this.read();
   }
-  public clone() {
+  clone() {
     const d = new Database(this.filePath, {
       spaces: this.spaces
     });
