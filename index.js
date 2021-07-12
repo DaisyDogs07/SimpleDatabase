@@ -163,7 +163,7 @@ class Database extends EventEmitter {
         value
       });
     } catch (e) {
-      throw new TypeError(`Value cannot be ${typeOf(value)}`);
+      throw new TypeError(`Value cannot be ${value}`);
     }
     let v = this.get(path);
     if (v !== value) {
