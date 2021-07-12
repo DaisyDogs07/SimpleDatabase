@@ -8,12 +8,9 @@ fs.rmSync = fs.rmSync || fs.unlinkSync;
 
 /**
  * The options for the Database
+ * @typedef DatabaseOptions
+ * @property {?number} [spaces]
  */
-class DatabaseOptions {
-  constructor(spaces = 2) {
-    this.spaces = Number(spaces);
-  }
-}
 
 /**
  * The main Database class for creating a database
@@ -24,7 +21,9 @@ class Database extends EventEmitter {
    * @param {?string} Location The path to the file
    * @param {DatabaseOptions} Options The options to give when creating the database
    */
-  constructor(location = 'database', options = new DatabaseOptions) {
+  constructor(location = 'database', options = {
+    spaces: 2
+  }) {
     super();
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
@@ -344,6 +343,5 @@ function _get(path, obj) {
 }
 
 Database.Database = Database;
-Database.DatabaseOptions = DatabaseOptions;
 Database.default = Database;
 module.exports = Database;
