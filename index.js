@@ -186,17 +186,12 @@ class Database extends EventEmitter {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     if (!this.has(path))
-      return true;
+      return this;
     let data = this.read();
-    try {
-      data = _delete(path, data);
-      this.emit('change', path, this.read(), data);
-      fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
-      return true;
-    } catch (e) {
-      this.emit('error', e);
-      return false;
-    }
+    data = _delete(path, data);
+    this.emit('change', path, this.read(), data);
+    fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
+    return this;
   }
   /**
    * Finds a JSON key
