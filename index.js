@@ -49,7 +49,7 @@ class Database extends EventEmitter {
     loc = location.replace(dir, '');
     let filePath = `${path.resolve(dir)}/${loc}.json`;
     if (!fs.existsSync(dir))
-      fs.mkdirSync(path.resolve(dir), {
+      fs.mkdirSync(dir, {
         recursive: true
       });
     if (!fs.existsSync(filePath)) {
@@ -83,8 +83,8 @@ class Database extends EventEmitter {
       amount = 0;
     if (amount > 4)
       amount = 4;
-    fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, amount));
     this.spaces = amount;
+    fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, amount));
     return this;
   }
   toString() {
@@ -215,7 +215,7 @@ class Database extends EventEmitter {
     return;
   }
   /**
-   * Same as find() except it returns an array
+   * Finds JSON keys
    * @param {string} Path The scope of where to look
    * @param {Function} fn The function to test with
    */
@@ -239,7 +239,7 @@ class Database extends EventEmitter {
     return;
   }
   /**
-   * Checks if a key is present in the Database
+   * Checks if a JSON key exists
    * @param {string} Path The path to the JSON key
    */
   has(path) {
