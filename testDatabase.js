@@ -7,7 +7,7 @@ const Database = require('./'),
 // Testing new Database()
 try {
   new Database(__dirname + '/shouldFail.js');
-  console.log(new TypeError('new Database() failed'));
+  console.log(new Error('new Database() failed'));
   process.exit(1);
 } catch (e) {}
 try {
@@ -15,17 +15,17 @@ try {
   fs.unlinkSync(d.filePath);
   fs.rmdirSync(d.filePath.replace('/database.json', ''));
 } catch (e) {
-  console.log(new TypeError('new Database() failed'));
+  console.log(new Error('new Database() failed'));
   process.exit(1);
 }
 
 // Testing filePath
 if (database.filePath !== (__dirname + '/database.json'))
-  throw new TypeError('FilePath is incorrect');
+  throw new Error('FilePath is incorrect');
 
 // Testing spaces
 if (database.spaces !== 2)
-  throw new TypeError('Spaces is incorrect');
+  throw new Error('Spaces is incorrect');
 
 database.clear(); // Get rid of unwanted data
 
@@ -49,10 +49,10 @@ database.sub('sub')
 // Testing delete()
 const deleted = database.delete('delete');
 if (!deleted || database.has('delete'))
-  throw new TypeError('delete() failed');
+  throw new Error('delete() failed');
 
 let listener = () => {
-  throw new TypeError('Change event fired when not supposed to');
+  throw new Error('Change event fired when not supposed to');
 }
 
 // Testing change event (While also testing set(), delete(), add(), And sub())
@@ -75,7 +75,7 @@ database.removeListener('change', listener);
 database.set('set delete test', '');
 database.set('set delete test', undefined);
 if (database.has('set delete test'))
-  throw new TypeError('set() failed');
+  throw new Error('set() failed');
 
 listener = value => {
   if (value !== expectedValue)
@@ -154,9 +154,9 @@ let d = {
 };
 database.moveTo(__dirname + '/database1');
 if (fs.existsSync(d.filePath))
-  throw new TypeError('moveTo() failed');
+  throw new Error('moveTo() failed');
 if (d.str !== database.toString())
-  throw new TypeError('moveTo() failed');
+  throw new Error('moveTo() failed');
 
 d = {
   str: database.toString(),
@@ -164,9 +164,14 @@ d = {
 };
 database.moveTo(__dirname + '/database2', false);
 if (!fs.existsSync(d.filePath))
-  throw new TypeError('moveTo() failed');
+  throw new Error('moveTo() failed');
 if (d.str !== database.toString())
-  throw new TypeError('moveTo() failed');
+  throw new Error('moveTo() failed');
+
+// Test clear()
+database.clear();
+if (database.toString() !== '{}')
+  throw new Error('clear() failed');
 
 // Remove all Databases for cleanup
 fs.unlinkSync(database.filePath);
