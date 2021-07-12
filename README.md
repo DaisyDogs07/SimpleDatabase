@@ -66,7 +66,7 @@ const database = new Database();
 
 ### moveTo(location\[, deleteFile\])
 #### Moves the Database to a new file
-* **Location:** The location of the new file
+* **Location:** The path to the new file
 * **DeleteFile:** Whether to delete the previous file
 * **Returns:** A reference to the Database
 
