@@ -172,7 +172,7 @@ class Database extends EventEmitter {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     try {
-      JSON.parse({
+      JSON.stringify({
         value
       });
     } catch (e) {
