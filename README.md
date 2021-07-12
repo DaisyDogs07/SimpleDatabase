@@ -48,6 +48,11 @@ const database = new Database();
 * **Path:** The path to the JSON key
 * **Returns:** The JSON value of the JSON key
 
+### has(path)
+#### Checks if a JSON key exists
+* **Path:** The path to the JSON key
+* **Returns:** boolean
+
 ### find(path, fn)
 #### Finds a JSON key
 * **Path:** The scope of where to look
@@ -55,7 +60,7 @@ const database = new Database();
 * **Returns:** The value that succeeded in the test, 'undefined' if none were successful
 
 ### findAll(path, fn)
-#### Same as find() except it returns an array
+#### Finds JSON keys
 * **Path:** The scope of where to look
 * **Fn:** The function to test with
 * **Returns:** An array of values that succeeded in the test, 'undefined' if none were successful
