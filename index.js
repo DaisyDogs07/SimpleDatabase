@@ -20,7 +20,7 @@ class Database extends EventEmitter {
   /**
    * Makes a new Database. If the file is not present, We'll make it for you
    * @param {?string} Location The path to the file
-   * @param {DatabaseOptions | object} Options The options to give when creating the database
+   * @param {DatabaseOptions} Options The options to give when creating the database
    */
   constructor(location = 'database', options = new DatabaseOptions) {
     super();
@@ -38,7 +38,7 @@ class Database extends EventEmitter {
       location += 'database';
     let loc = location.split('.');
     if (loc.length !== 1 && loc[loc.length - 1] !== 'json')
-      throw new TypeError(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' file extension`);
+      throw new Error(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' file extension`);
     if (location.endsWith('.json'))
       location = location.slice(0, -5);
     let dir = location.split('/');
@@ -65,24 +65,7 @@ class Database extends EventEmitter {
      * The history of all changes
      */
     this.history = [this.read()];
-    let _onchange;
-    Object.defineProperty(this, 'onchange', {
-      get() {
-        return _onchange;
-      },
-      set(fn) {
-        if (fn && typeof fn !== 'function')
-          throw new TypeError('Onchange must be a function');
-        _onchange = fn;
-        return fn;
-      },
-      configurable: true
-    });
-    this.on('change', (path, oldData, newData) => {
-      this.history.unshift(newData);
-      if (_onchange)
-        _onchange(path, oldData, newData);
-    });
+    this.on('change', (path, oldData, newData) => this.history.unshift(newData));
   }
   /**
    * Sets the amount of spaces the file is formatted with
@@ -283,13 +266,13 @@ class Database extends EventEmitter {
    * Clears the Database. Use with caution
    */
   clear() {
-    if (this.toString() !== '{}') {
-      this.emit('change', null, this.read(), {});
-      fs.writeFileSync(this.filePath, '{}');
-    }
+    if (this.toString() !== '{}')
+      this.set('', {});
   }
   /**
    * Moves the Database to a new file
+   * @param {string} Location The path to the new file
+   * @param {?boolean} DeleteFile Weather to delete the previous file
    */
   moveTo(location, deleteFile = true) {
     if (arguments.length === 0)
