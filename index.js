@@ -348,7 +348,7 @@ function _get(path, obj) {
   return obj;
 }
 
+Database.Database = Database;
+Database.DatabaseOptions = DatabaseOptions;
+Database.default = Database;
 module.exports = Database;
-module.exports.Database = Database;
-module.exports.DatabaseOptions = DatabaseOptions;
-module.exports.default = Database;
