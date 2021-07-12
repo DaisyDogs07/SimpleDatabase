@@ -4,6 +4,8 @@ const fs = require('fs'),
   path = require('path'),
   {EventEmitter} = require('events');
 
+fs.rmSync = fs.rmSync || fs.unlinkSync;
+
 /**
  * The options for the Database
  */
@@ -254,13 +256,7 @@ class Database extends EventEmitter {
    * Reads the JSON Object from the database file
    */
   read() {
-    let data = fs.readFileSync(this.filePath, 'utf8');
-    try {
-      data = JSON.parse(data);
-    } catch (e) {
-      data = {};
-    }
-    return data;
+    return JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
   }
   /**
    * Clears the Database. Use with caution
@@ -286,7 +282,7 @@ class Database extends EventEmitter {
     });
     fs.writeFileSync(database.filePath, JSON.stringify(this.read(), null, this.spaces));
     if (deleteFile)
-      fs.unlinkSync(this.filePath);
+      fs.rmSync(this.filePath);
     database.history = this.history;
     Object.assign(this, database);
     return this;
