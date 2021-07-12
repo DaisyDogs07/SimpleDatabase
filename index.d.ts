@@ -24,7 +24,6 @@ declare module 'SimpleDatabase' {
     public get(path?: ''): object;
     public get(path: string): any;
     public entries(): [string, any][];
-    public toJSON(): object;
     public toString(): string;
     private spaces: number;
     public history: object[];
