@@ -52,8 +52,10 @@ class Database extends EventEmitter {
       fs.mkdirSync(path.resolve(dir), {
         recursive: true
       });
-    if (!fs.existsSync(filePath))
+    if (!fs.existsSync(filePath)) {
       fs.closeSync(fs.openSync(filePath, 'w'));
+      fs.writeFileSync(filePath, '{}');
+    }
     /**
      * The path to the Database file
      */
