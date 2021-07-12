@@ -41,7 +41,7 @@ const database = new Database();
 ### delete(path)
 #### Deletes a JSON key
 * **Path:** The path to the JSON key
-* **Returns:** boolean
+* **Returns:** A reference to the Database
 
 ### get(\[path\])
 #### Gets the specified JSON key's value
