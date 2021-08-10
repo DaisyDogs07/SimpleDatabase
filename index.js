@@ -47,7 +47,7 @@ class Database extends EventEmitter {
     dir = dir.join('/');
     loc = location.replace(dir, '');
     let filePath = `${path.resolve(dir)}/${loc}.json`;
-    if (!fs.existsSync(dir))
+    if (!fs.existsSync(dir || './'))
       fs.mkdirSync(dir, {
         recursive: true
       });
