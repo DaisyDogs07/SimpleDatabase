@@ -4,8 +4,6 @@ const fs = require('fs'),
   path = require('path'),
   {EventEmitter} = require('events');
 
-fs.rmSync = fs.rmSync || fs.unlinkSync;
-
 /**
  * The options for the Database
  * @typedef DatabaseOptions
@@ -278,7 +276,7 @@ class Database extends EventEmitter {
     });
     fs.writeFileSync(database.filePath, JSON.stringify(this.read(), null, this.spaces));
     if (deleteFile)
-      fs.rmSync(this.filePath);
+      fs.unlinkSync(this.filePath);
     database.history = this.history;
     Object.assign(this, database);
     return this;
