@@ -3,6 +3,7 @@ declare module 'SimpleDatabase' {
 
   interface DatabaseOptions {
     spaces?: number;
+    force?: boolean
   }
 
   class Database extends EventEmitter {

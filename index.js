@@ -8,6 +8,7 @@ const fs = require('fs'),
  * The options for the Database
  * @typedef DatabaseOptions
  * @property {?number} [spaces]
+ * @property {?boolean} [force]
  */
 
 /**
@@ -17,34 +18,37 @@ class Database extends EventEmitter {
   /**
    * Makes a new Database. If the file is not present, We'll make it for you
    * @param {?string} Location The path to the file
-   * @param {DatabaseOptions} Options The options to give when creating the database
+   * @param {?DatabaseOptions} Options The options to give when creating the database
    */
-  constructor(location = 'database', options = {
-    spaces: 2
-  }) {
+  constructor(location = 'database.json', options = {}) {
     super();
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
     if (typeOf(options) !== 'an object')
       throw new TypeError('Options must be an object');
+    options = {
+      spaces: 2,
+      force: false,
+      ...options
+    };
     if (typeof options.spaces !== 'number')
       throw new TypeError('Spaces option must be a number');
+    if (typeof options.force !== 'boolean')
+      throw new TypeError('Force option must be boolean');
     if (options.spaces < 0)
       options.spaces = 0;
     if (options.spaces > 4)
       options.spaces = 4;
     if (location.endsWith('/'))
-      location += 'database';
+      location += 'database.json';
     let loc = location.replace(/\.(\.)?\//g, '').split('.');
-    if (loc.length !== 1 && loc[loc.length - 1] !== 'json')
-      throw new Error(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' file extension`);
-    if (location.endsWith('.json'))
-      location = location.slice(0, -5);
+    if (options.force && loc.length !== 1 && !['json', 'sql'].includes(loc[loc.length - 1]))
+      throw new Error(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' or 'sql' file extension`);
     let dir = location.split('/');
     delete dir[dir.length - 1];
     dir = dir.join('/');
     loc = location.replace(dir, '');
-    let filePath = `${path.resolve(dir)}/${loc}.json`;
+    let filePath = `${path.resolve(dir)}/${loc}`;
     if (!fs.existsSync(dir || './'))
       fs.mkdirSync(dir, {
         recursive: true
