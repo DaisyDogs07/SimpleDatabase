@@ -42,7 +42,7 @@ class Database extends EventEmitter {
     if (location.endsWith('/'))
       location += 'database.json';
     let loc = location.replace(/\.(\.)?\//g, '').split('.');
-    if (options.force && loc.length !== 1 && !['json', 'sql'].includes(loc[loc.length - 1]))
+    if (!options.force && loc.length !== 1 && !['json', 'sql'].includes(loc[loc.length - 1]))
       throw new Error(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' or 'sql' file extension`);
     let dir = location.split('/');
     delete dir[dir.length - 1];
