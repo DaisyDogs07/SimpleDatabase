@@ -35,7 +35,7 @@ class Database extends EventEmitter {
       options.spaces = 4;
     if (location.endsWith('/'))
       location += 'database';
-    let loc = location.replace(/\.\.\/|\.\//g, '').split('.');
+    let loc = location.replace(/\.(\.)?\//g, '').split('.');
     if (loc.length !== 1 && loc[loc.length - 1] !== 'json')
       throw new Error(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' file extension`);
     if (location.endsWith('.json'))
