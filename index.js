@@ -26,11 +26,10 @@ class Database extends EventEmitter {
       throw new TypeError('Location must be a string');
     if (typeOf(options) !== 'an object')
       throw new TypeError('Options must be an object');
-    options = {
+    options = Object.assign({
       spaces: 2,
-      force: false,
-      ...options
-    };
+      force: false
+    }, options);
     if (typeof options.spaces !== 'number')
       throw new TypeError('Spaces option must be a number');
     if (typeof options.force !== 'boolean')
