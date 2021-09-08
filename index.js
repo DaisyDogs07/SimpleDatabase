@@ -57,12 +57,13 @@ class Database extends EventEmitter {
     }
     Object.defineProperties(this, {
       filePath: {
-        get() {
-          return filePath;
-        }
+        value: filePath,
+        enumerable: true,
+        writable: true
       },
       spaces: {
-        value: Math.min(Math.max(options.spaces, 0), 4), // Confine options.spaces between 0 and 4 (Faster than using ifs
+        value: Math.min(Math.max(options.spaces, 0), 4), // Confine options.spaces between 0 and 4 (Faster than using ifs)
+        writable: true
       },
       force: {
         value: options.force
@@ -275,7 +276,8 @@ class Database extends EventEmitter {
     if (typeof deleteFile !== 'boolean')
       throw new TypeError('DeleteFile must be boolean');
     const database = new Database(location, {
-      spaces: this.spaces
+      spaces: this.spaces,
+      force: this.force
     });
     fs.writeFileSync(database.filePath, JSON.stringify(this.read(), null, this.spaces));
     if (deleteFile)

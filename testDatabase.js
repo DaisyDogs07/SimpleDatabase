@@ -62,8 +62,7 @@ database.set('set1', '')
   .set('set2', 1)
   .set('set3', [])
   .set('set4', {})
-  .set('set5', null)
-  .set('set6', undefined);
+  .set('set5', null);
 
 database.delete('delete');
 
@@ -71,11 +70,6 @@ database.add('add', 0)
   .sub('sub', 0);
 
 database.removeListener('change', listener);
-
-database.set('set delete test', '');
-database.set('set delete test', undefined);
-if (database.has('set delete test'))
-  throw new Error('set() failed');
 
 listener = value => {
   if (value !== expectedValue)
