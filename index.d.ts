@@ -3,7 +3,7 @@ declare module 'SimpleDatabase' {
 
   interface DatabaseOptions {
     spaces?: number;
-    force?: boolean
+    force?: boolean;
   }
 
   class Database extends EventEmitter {
@@ -29,6 +29,7 @@ declare module 'SimpleDatabase' {
     private read(): object;
     private filePath: string;
     private spaces: number;
+    private force: boolean;
 
     public on(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
     public off(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;

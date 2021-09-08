@@ -34,19 +34,18 @@ class Database extends EventEmitter {
       throw new TypeError('Spaces option must be a number');
     if (typeof options.force !== 'boolean')
       throw new TypeError('Force option must be boolean');
-    if (options.spaces < 0)
-      options.spaces = 0;
-    if (options.spaces > 4)
-      options.spaces = 4;
-    if (location.endsWith('/'))
+    if (!location || location.endsWith('/'))
       location += 'database.json';
+    if (!options.force) {
+      if (!location.split('/').pop().includes('.'))
+        location += '.json';
+    }
     let loc = location.replace(/\.(\.)?\//g, '').split('.');
     if (!options.force && loc.length !== 1 && !['json', 'sql'].includes(loc[loc.length - 1]))
       throw new Error(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' or 'sql' file extension`);
     let dir = location.split('/');
-    delete dir[dir.length - 1];
+    loc = dir.pop();
     dir = dir.join('/');
-    loc = location.replace(dir, '');
     let filePath = `${path.resolve(dir)}/${loc}`;
     if (!fs.existsSync(dir || './'))
       fs.mkdirSync(dir, {
@@ -56,14 +55,19 @@ class Database extends EventEmitter {
       fs.closeSync(fs.openSync(filePath, 'w'));
       fs.writeFileSync(filePath, '{}');
     }
-    /**
-     * The path to the Database file
-     */
-    this.filePath = filePath;
-    /**
-     * The amount of spaces in the Database file
-     */
-    this.spaces = options.spaces;
+    Object.defineProperties(this, {
+      filePath: {
+        get() {
+          return filePath;
+        }
+      },
+      spaces: {
+        value: Math.min(Math.max(options.spaces, 0), 4), // Confine options.spaces between 0 and 4 (Faster than using ifs
+      },
+      force: {
+        value: options.force
+      }
+    });
     fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, this.spaces));
     /**
      * The history of all changes
@@ -79,10 +83,7 @@ class Database extends EventEmitter {
     amount = Number(amount);
     if (isNaN(amount))
       throw new TypeError(`Spaces cannot be ${typeOf(amount)}`);
-    if (amount < 0)
-      amount = 0;
-    if (amount > 4)
-      amount = 4;
+    amount = Math.min(Math.max(amount, 0), 4); // Confine amount between 0 and 4 (Faster than using ifs)
     this.spaces = amount;
     fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, amount));
     return this;
@@ -106,8 +107,8 @@ class Database extends EventEmitter {
       throw new TypeError(`Amount connot be ${typeOf(amount)}`);
     let v = this.get(path);
     if (typeof v !== 'number')
-      throw new TypeError('Path must lead to a number');
-    v += Number(amount);
+      throw new TypeError(`Path must lead to a number. Received: ${typeOf(v)}`);
+    v += amount;
     return this.set(path, v);
   }
   /**
@@ -126,8 +127,8 @@ class Database extends EventEmitter {
       throw new TypeError(`Amount connot be ${typeOf(amount)}`);
     let v = this.get(path);
     if (typeof v !== 'number')
-      throw new TypeError('Path must lead to a number');
-    v -= Number(amount);
+      throw new TypeError(`Path must lead to a number. Received: ${typeOf(v)}`);
+    v -= amount;
     return this.set(path, v);
   }
   /**
@@ -151,27 +152,26 @@ class Database extends EventEmitter {
       if (typeOf(value) !== 'an object')
         throw new TypeError(`Cannot set JSON to ${typeOf(value)}`);
       if (this.toString() !== JSON.stringify(value, null, this.spaces)) {
-        this.emit('change', path, this.read(), value);
+        this.emit('change', path, this.read(), JSON.parse(JSON.stringify(value)));
         fs.writeFileSync(this.filePath, JSON.stringify(value, null, this.spaces));
       }
       return this;
     }
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
-    try {
-      JSON.stringify({
+    if (JSON.stringify({
         value
-      });
-    } catch (e) {
-      throw new TypeError(`Value cannot be ${value}`);
-    }
+      }) === '{}')
+      throw new TypeError(`Value cannot be ${typeof value === 'number' ? value : typeOf(value)}`);
     let v = this.get(path);
     if (v !== value) {
       if ((typeOf(v) === 'an object' || typeOf(v) === 'an array') && (typeOf(value) === 'an object' || typeOf(value) === 'an array') && JSON.stringify(v) === JSON.stringify(value))
         return this;
       let data = this.read();
       data = _set(path, value, data);
-      this.emit('change', path, this.read(), data);
+      if (JSON.stringify(this.read()) === JSON.stringify(data)) // Returns true in some cases like NaN and Infinity values
+        return this;
+      this.emit('change', path, this.read(), JSON.parse(JSON.stringify(data)));
       fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
     }
     return this;
@@ -189,7 +189,7 @@ class Database extends EventEmitter {
       return this;
     let data = this.read();
     data = _delete(path, data);
-    this.emit('change', path, this.read(), data);
+    this.emit('change', path, this.read(), JSON.parse(JSON.stringify(data)));
     fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
     return this;
   }
@@ -289,7 +289,8 @@ class Database extends EventEmitter {
   }
   clone() {
     const database = new Database(this.filePath, {
-      spaces: this.spaces
+      spaces: this.spaces,
+      force: this.force
     });
     database.history = this.history;
     return database;
