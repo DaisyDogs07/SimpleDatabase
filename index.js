@@ -5,20 +5,13 @@ const fs = require('fs'),
   {EventEmitter} = require('events');
 
 /**
- * The options for the Database
- * @typedef DatabaseOptions
- * @property {?number} [spaces]
- * @property {?boolean} [force]
- */
-
-/**
  * The main Database class for creating a database
  */
 class Database extends EventEmitter {
   /**
    * Makes a new Database. If the file is not present, We'll make it for you
    * @param {?string} Location The path to the file
-   * @param {?DatabaseOptions} Options The options to give when creating the database
+   * @param {?object} Options The options to give when creating the database
    */
   constructor(location = 'database.json', options = {}) {
     super();
@@ -150,7 +143,7 @@ class Database extends EventEmitter {
    */
   set(path, value) {
     if (path === '') {
-      if (typeOf(value) !== 'an object')
+      if (typeOf(value) !== 'an object' && typeOf(value) !== 'an array')
         throw new TypeError(`Cannot set JSON to ${typeOf(value)}`);
       if (this.toString() !== JSON.stringify(value, null, this.spaces)) {
         this.emit('change', path, this.read(), JSON.parse(JSON.stringify(value)));
