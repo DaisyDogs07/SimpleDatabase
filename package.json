@@ -1,6 +1,6 @@
 {
   "name": "SimpleDatabase",
-  "version": "v1.1.0",
+  "version": "v1.1.1",
   "main": "index.js",
   "author": "DaisyDogs07",
   "license": "ISC",
@@ -8,9 +8,7 @@
   "engines": {
     "node": ">=7.0.0"
   },
-  "homepage": {
-    "url": "https://github.com/DaisyDogs07/SimpleDatabase#readme"
-  },
+  "homepage": "https://github.com/DaisyDogs07/SimpleDatabase#readme",
   "repository": {
     "url": "https://github.com/DaisyDogs07/SimpleDatabase"
   },

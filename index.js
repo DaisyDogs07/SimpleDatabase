@@ -76,8 +76,8 @@ class Database extends EventEmitter {
   setSpaces(amount = 2) {
     amount = Number(amount);
     if (isNaN(amount))
-      throw new TypeError(`Spaces cannot be ${typeOf(amount)}`);
-    amount = Math.min(Math.max(amount, 0), 4); // Confine amount between 0 and 4 (Faster than using ifs)
+      throw new TypeError('Spaces cannot be ' + typeOf(amount));
+    amount = Math.min(Math.max(amount, 0), 4);
     this.spaces = amount;
     fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, amount));
     return this;
@@ -142,6 +142,8 @@ class Database extends EventEmitter {
    * @param Value The value to set
    */
   set(path, value) {
+    if (arguments.length === 0)
+      throw new Error('Missing JSON path');
     if (path === '') {
       if (typeOf(value) !== 'an object' && typeOf(value) !== 'an array')
         throw new TypeError(`Cannot set JSON to ${typeOf(value)}`);
@@ -154,12 +156,14 @@ class Database extends EventEmitter {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     if (JSON.stringify({
-        value
-      }) === '{}')
+      value
+    }) === '{}')
       throw new TypeError(`Value cannot be ${typeof value === 'number' ? value : typeOf(value)}`);
     let v = this.get(path);
     if (v !== value) {
-      if ((typeOf(v) === 'an object' || typeOf(v) === 'an array') && (typeOf(value) === 'an object' || typeOf(value) === 'an array') && JSON.stringify(v) === JSON.stringify(value))
+      if ((typeOf(v) === 'an object' || typeOf(v) === 'an array') &&
+          (typeOf(value) === 'an object' || typeOf(value) === 'an array') &&
+          JSON.stringify(v) === JSON.stringify(value))
         return this;
       let data = this.read();
       data = _set(path, value, data);
@@ -206,7 +210,6 @@ class Database extends EventEmitter {
       if (fn(v, k))
         return v;
     }
-    return;
   }
   /**
    * Finds JSON keys
@@ -230,7 +233,6 @@ class Database extends EventEmitter {
     }
     if (arr.length !== 0)
       return arr;
-    return;
   }
   /**
    * Checks if a JSON key exists
@@ -276,7 +278,6 @@ class Database extends EventEmitter {
     if (deleteFile)
       fs.unlinkSync(this.filePath);
     database.history = this.history;
-    Object.assign(this, database);
     return this;
   }
   entries() {
@@ -340,5 +341,4 @@ function _get(path, obj) {
 }
 
 Database.Database = Database;
-Database.default = Database;
 module.exports = Database;

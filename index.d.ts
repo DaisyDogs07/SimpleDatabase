@@ -1,5 +1,5 @@
 declare module 'SimpleDatabase' {
-  import {EventEmitter} from 'events';
+  import {EventEmitter} from 'node:events';
 
   interface DatabaseOptions {
     spaces?: number;
@@ -26,20 +26,30 @@ declare module 'SimpleDatabase' {
     public entries(): [string, any][];
     public toString(): string;
     public history: object[];
-    private read(): object;
-    private filePath: string;
+    public filePath: string;
+    private read(): object | any[];
     private spaces: number;
     private force: boolean;
 
+    public on(event: string | symbol, listener: (...args: any[]) => void): this;
     public on(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
+    public addListener(event: string | symbol, listener: (...args: any[]) => void): this;
+    public addListener(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
+
+    public off(event: string | symbol, listener: (...args: any[]) => void): this;
     public off(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
+    public removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
+    public removeListener(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
+
+    public once(event: string | symbol, listener: (...args: any[]) => void): this;
     public once(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
+
+    public emit(event: string | symbol, listener: (...args: any[]) => void): boolean;
     public emit(event: 'change', listener: (path: string, oldData: object, newData: object) => void): boolean;
 
-    public clone(): this;
+    public clone(): Database;
 
     public static Database: typeof Database;
-    public static default: typeof Database;
   }
   export = Database;
 }
