@@ -15,7 +15,7 @@ declare module 'SimpleDatabase' {
     public set(path: '', value: object): this;
     public delete(path: string): boolean;
     public clear(): void;
-    public moveTo(location: string, deleteFile?: boolean): this;
+    public moveTo(location: string, deleteFile?: boolean): Database;
     public setSpaces(amount?: number): this;
 
     public find(path: string, fn: (V: any, K: string) => boolean): any;

@@ -278,7 +278,7 @@ class Database extends EventEmitter {
     if (deleteFile)
       fs.unlinkSync(this.filePath);
     database.history = this.history;
-    return this;
+    return database;
   }
   entries() {
     return Object.entries(this.read());
