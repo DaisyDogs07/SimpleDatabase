@@ -3,7 +3,7 @@ This is my simple database, A database that uses fs.
 
 ## Install
 ```console
-npm i github:DaisyDogs07/SimpleDatabase#minified
+npm i github:DaisyDogs07/SimpleDatabase
 ```
 
 ## Setup
@@ -18,6 +18,7 @@ const database = new Database();
 
 ## Database Options
 * **Spaces:** The amount of spaces to format the file with
+* **Force:** Weather to ignore unsupported file error
 
 ## Methods
 ### add(path\[, amount\])
@@ -41,12 +42,17 @@ const database = new Database();
 ### delete(path)
 #### Deletes a JSON key
 * **Path:** The path to the JSON key
-* **Returns:** boolean
+* **Returns:** A reference to the Database
 
 ### get(\[path\])
 #### Gets the specified JSON key's value
 * **Path:** The path to the JSON key
 * **Returns:** The JSON value of the JSON key
+
+### has(path)
+#### Checks if a JSON key exists
+* **Path:** The path to the JSON key
+* **Returns:** boolean
 
 ### find(path, fn)
 #### Finds a JSON key
@@ -55,7 +61,7 @@ const database = new Database();
 * **Returns:** The value that succeeded in the test, 'undefined' if none were successful
 
 ### findAll(path, fn)
-#### Same as find() except it returns an array
+#### Finds JSON keys
 * **Path:** The scope of where to look
 * **Fn:** The function to test with
 * **Returns:** An array of values that succeeded in the test, 'undefined' if none were successful
@@ -66,7 +72,7 @@ const database = new Database();
 
 ### moveTo(location\[, deleteFile\])
 #### Moves the Database to a new file
-* **Location:** The location of the new file
+* **Location:** The path to the new file
 * **DeleteFile:** Whether to delete the previous file
 * **Returns:** A reference to the Database
 

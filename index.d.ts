@@ -1,46 +1,55 @@
 declare module 'SimpleDatabase' {
-  import {EventEmitter} from 'events';
-  class DatabaseOptions {
-    constructor(spaces?: number);
-    public spaces: number;
+  import {EventEmitter} from 'node:events';
+
+  interface DatabaseOptions {
+    spaces?: number;
+    force?: boolean;
   }
+
   class Database extends EventEmitter {
     constructor(location?: string, options?: DatabaseOptions);
-    //Modifiers
+
     public add(path: string, amount?: number): this;
     public sub(path: string, amount?: number): this;
     public set(path: string, value: any): this;
-    public set(path: '', value: object): this;
-    public delete(path: string): boolean;
+    public set(path: '', value: object | Array<any>): this;
+    public delete(path: string): this;
     public clear(): void;
     public moveTo(location: string, deleteFile?: boolean): this;
     public setSpaces(amount?: number): this;
 
-    //Readers
-    public find(path: string, fn: (V: any, K: string) => boolean): any;
-    public findAll(path: string, fn: (V: any, K: string) => boolean): any[];
-    private read(): object;
+    public find(path: string, fn: (V: any, K: string) => void): any;
+    public findAll(path: string, fn: (V: any, K: string) => void): any[];
     public has(path: string): boolean;
-    public get(path?: ''): object;
     public get(path: string): any;
+    public get(path?: ''): object | Array<any>;
     public entries(): [string, any][];
     public toString(): string;
+    public history: (object | Array<any>)[];
+    public filePath: string;
+    private read(): object | any[];
     private spaces: number;
-    public history: object[];
+    private force: boolean;
 
-    //Events
+    public on(event: string | symbol, listener: (...args: any[]) => void): this;
     public on(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
+    public addListener(event: string | symbol, listener: (...args: any[]) => void): this;
+    public addListener(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
+
+    public off(event: string | symbol, listener: (...args: any[]) => void): this;
     public off(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
+    public removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
+    public removeListener(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
+
+    public once(event: string | symbol, listener: (...args: any[]) => void): this;
     public once(event: 'change', listener: (path: string, oldData: object, newData: object) => void): this;
+
+    public emit(event: string | symbol, listener: (...args: any[]) => void): boolean;
     public emit(event: 'change', listener: (path: string, oldData: object, newData: object) => void): boolean;
 
-    //Utils
-    public clone(): this;
+    public clone(): Database;
 
-    //Static
     public static Database: typeof Database;
-    public static DatabaseOptions: typeof DatabaseOptions;
-    public static default: typeof Database;
   }
   export = Database;
 }
