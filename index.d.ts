@@ -12,20 +12,20 @@ declare module 'SimpleDatabase' {
     public add(path: string, amount?: number): this;
     public sub(path: string, amount?: number): this;
     public set(path: string, value: any): this;
-    public set(path: '', value: object): this;
-    public delete(path: string): boolean;
+    public set(path: '', value: object | Array<any>): this;
+    public delete(path: string): this;
     public clear(): void;
     public moveTo(location: string, deleteFile?: boolean): this;
     public setSpaces(amount?: number): this;
 
-    public find(path: string, fn: (V: any, K: string) => boolean): any;
-    public findAll(path: string, fn: (V: any, K: string) => boolean): any[];
+    public find(path: string, fn: (V: any, K: string) => void): any;
+    public findAll(path: string, fn: (V: any, K: string) => void): any[];
     public has(path: string): boolean;
     public get(path: string): any;
-    public get(path?: ''): object;
+    public get(path?: ''): object | Array<any>;
     public entries(): [string, any][];
     public toString(): string;
-    public history: object[];
+    public history: (object | Array<any>)[];
     public filePath: string;
     private read(): object | any[];
     private spaces: number;
