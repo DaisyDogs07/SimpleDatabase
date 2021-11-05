@@ -47,8 +47,8 @@ database.sub('sub')
   .sub('sub', 2);
 
 // Testing delete()
-const deleted = database.delete('delete');
-if (!deleted || database.has('delete'))
+database.delete('delete');
+if (database.has('delete'))
   throw new Error('delete() failed');
 
 let listener = () => {
@@ -83,10 +83,10 @@ listener(database.get('set1'));
 expectedValue = 1;
 listener(database.get('set2'));
 
-expectedValue = JSON.stringify([]);
+expectedValue = '[]';
 listener(JSON.stringify(database.get('set3')));
 
-expectedValue = JSON.stringify({});
+expectedValue = '{}';
 listener(JSON.stringify(database.get('set4')));
 
 expectedValue = null;
@@ -96,7 +96,7 @@ expectedValue = undefined;
 listener(database.get('set6'));
 
 // Testing read(), And toString()
-expectedValue = `{"set1":"","set2":1,"set3":[],"set4":{},"set5":null,"add":4,"sub":0}`;
+expectedValue = '{"set1":"","set2":1,"set3":[],"set4":{},"set5":null,"add":4,"sub":0}';
 listener(JSON.stringify(database.read()));
 
 expectedValue = JSON.stringify(database.read(), null, 2);
@@ -120,13 +120,16 @@ listener(JSON.stringify(database.find('', v => v && v.nest1)));
 expectedValue = JSON.stringify(database.get('obj.nest1'));
 listener(JSON.stringify(database.find('obj', v => v.nest2 && v.nest2.value2)));
 
+expectedValue = JSON.stringify('Boo!');
+listener(JSON.stringify(database.find('obj.nest1', v => v === 'Boo!')));
+
 expectedValue = JSON.stringify([database.get('obj')]);
 listener(JSON.stringify(database.findAll('', v => v && v.nest1)));
 
 expectedValue = JSON.stringify([database.get('obj.nest1')]);
 listener(JSON.stringify(database.findAll('obj', v => v.nest2 && v.nest2.value2)));
 
-expectedValue = JSON.stringify([database.get('obj.nest1.value1'),database.get('obj.nest1.duplicateOfValue1')]);
+expectedValue = JSON.stringify(['Boo!','Boo!']);
 listener(JSON.stringify(database.findAll('obj.nest1', v => v === 'Boo!')));
 
 // Testing setSpaces()
@@ -137,7 +140,7 @@ listener(JSON.stringify(database.findAll('obj.nest1', v => v === 'Boo!')));
   expectedValue = JSON.stringify(database.read(), null, Number(a));
   database.setSpaces(a);
   listener(database.toString());
-  expectedValue = Number(a);
+  expectedValue = +a;
   listener(database.spaces);
 });
 
