@@ -98,10 +98,10 @@ class Database extends EventEmitter {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     if (isNaN(amount))
-      throw new TypeError(`Amount connot be ${typeOf(amount)}`);
+      throw new TypeError('Amount connot be ' + typeOf(amount));
     let v = this.get(path);
     if (typeof v !== 'number')
-      throw new TypeError(`Path must lead to a number. Received: ${typeOf(v)}`);
+      throw new TypeError('Path must lead to a number. Received: ' + typeOf(v));
     v += amount;
     return this.set(path, v);
   }
@@ -118,10 +118,10 @@ class Database extends EventEmitter {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
     if (isNaN(amount))
-      throw new TypeError(`Amount connot be ${typeOf(amount)}`);
+      throw new TypeError('Amount connot be ' + typeOf(amount));
     let v = this.get(path);
     if (typeof v !== 'number')
-      throw new TypeError(`Path must lead to a number. Received: ${typeOf(v)}`);
+      throw new TypeError('Path must lead to a number. Received: ' + typeOf(v));
     v -= amount;
     return this.set(path, v);
   }
@@ -202,8 +202,8 @@ class Database extends EventEmitter {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     let obj = this.get(path);
-    if (typeOf(obj) !== 'an object')
-      throw new TypeError('Path must lead to an object');
+    if (typeOf(obj) !== 'an object' && typeOf(obj) !== 'an array')
+      throw new TypeError('Path must lead to an object or array');
     if (typeof fn !== 'function')
       throw new TypeError('fn must be a function');
     for (const [k, v] of Object.entries(obj)) {
@@ -222,8 +222,8 @@ class Database extends EventEmitter {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
     let obj = this.get(path);
-    if (typeOf(obj) !== 'an object')
-      throw new TypeError('Path must lead to an object');
+    if (typeOf(obj) !== 'an object' && typeOf(obj) !== 'an array')
+      throw new TypeError('Path must lead to an object or array');
     if (typeof fn !== 'function')
       throw new TypeError('fn must be a function');
     let arr = [];
