@@ -165,9 +165,8 @@ class Database extends EventEmitter {
           (typeOf(value) === 'an object' || typeOf(value) === 'an array') &&
           JSON.stringify(v) === JSON.stringify(value))
         return this;
-      let data = this.read();
-      data = _set(path, value, data);
-      if (JSON.stringify(this.read()) === JSON.stringify(data)) // Returns true in some cases like NaN and Infinity values
+      let data = _set(path, value, this.read());
+      if (JSON.stringify(this.read()) === JSON.stringify(data))
         return this;
       this.emit('change', path, this.read(), JSON.parse(JSON.stringify(data)));
       fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
@@ -185,8 +184,7 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (!this.has(path))
       return this;
-    let data = this.read();
-    data = _delete(path, data);
+    let data = _delete(path, this.read());
     this.emit('change', path, this.read(), JSON.parse(JSON.stringify(data)));
     fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
     return this;
