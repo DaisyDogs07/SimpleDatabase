@@ -18,8 +18,8 @@ declare module 'SimpleDatabase' {
     public moveTo(location: string, deleteFile?: boolean): this;
     public setSpaces(amount?: number): this;
 
-    public find(path: string, fn: (V: any, K: string | number) => void): any;
-    public findAll(path: string, fn: (V: any, K: string | number) => void): any[];
+    public find(path: string, fn: (V: any, K: string) => void): any;
+    public findAll(path: string, fn: (V: any, K: string) => void): any[];
     public has(path: string): boolean;
     public get(path: string): any;
     public get(path?: ''): object | any[];
