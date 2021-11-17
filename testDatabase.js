@@ -6,11 +6,6 @@ const Database = require('./'),
 
 // Testing new Database()
 try {
-  new Database(__dirname + '/shouldFail.js');
-  console.log(new Error('new Database() failed'));
-  process.exit(1);
-} catch (e) {}
-try {
   const d = new Database(__dirname + '/utils/');
   fs.unlinkSync(d.filePath);
   fs.rmdirSync(d.filePath.replace('/database.json', ''));
