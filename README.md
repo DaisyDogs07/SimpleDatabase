@@ -18,7 +18,6 @@ const database = new Database();
 
 ## Database Options
 * **Spaces:** The amount of spaces to format the file with
-* **Force:** Weather to ignore unsupported file error
 
 ## Methods
 ### add(path\[, amount\])

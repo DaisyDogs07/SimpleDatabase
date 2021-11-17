@@ -20,7 +20,7 @@ try {
 }
 
 // Testing filePath
-if (database.filePath !== (__dirname + '/database.json'))
+if (database.filePath !== __dirname + '/database.json')
   throw new Error('FilePath is incorrect');
 
 // Testing spaces
@@ -137,7 +137,7 @@ listener(JSON.stringify(database.findAll('obj.nest1', v => v === 'Boo!')));
   1,
   '1'
 ].forEach(a => {
-  expectedValue = JSON.stringify(database.read(), null, Number(a));
+  expectedValue = JSON.stringify(database.read(), null, +a);
   database.setSpaces(a);
   listener(database.toString());
   expectedValue = +a;

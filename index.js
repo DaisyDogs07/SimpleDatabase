@@ -25,17 +25,11 @@ class Database extends EventEmitter {
     }, options);
     if (typeof options.spaces !== 'number')
       throw new TypeError('Spaces option must be a number');
-    if (typeof options.force !== 'boolean')
-      throw new TypeError('Force option must be boolean');
     if (!location || location.endsWith('/'))
       location += 'database.json';
-    if (!options.force) {
-      if (!location.split('/').pop().includes('.'))
-        location += '.json';
-    }
+    if (!location.split('/').pop().includes('.'))
+      location += '.json';
     let loc = location.replace(/\.(\.)?\//g, '').split('.');
-    if (!options.force && loc.length !== 1 && !['json', 'sql'].includes(loc[loc.length - 1]))
-      throw new Error(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' or 'sql' file extension`);
     let dir = location.split('/');
     loc = dir.pop();
     dir = dir.join('/');
@@ -57,9 +51,6 @@ class Database extends EventEmitter {
       spaces: {
         value: Math.min(Math.max(options.spaces, 0), 4), // Confine options.spaces between 0 and 4 (Faster than using ifs)
         writable: true
-      },
-      force: {
-        value: options.force
       }
     });
     fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, this.spaces));
@@ -269,8 +260,7 @@ class Database extends EventEmitter {
     if (typeof deleteFile !== 'boolean')
       throw new TypeError('DeleteFile must be boolean');
     const database = new Database(location, {
-      spaces: this.spaces,
-      force: this.force
+      spaces: this.spaces
     });
     fs.writeFileSync(database.filePath, JSON.stringify(this.read(), null, this.spaces));
     if (deleteFile)
@@ -284,8 +274,7 @@ class Database extends EventEmitter {
   }
   clone() {
     const database = new Database(this.filePath, {
-      spaces: this.spaces,
-      force: this.force
+      spaces: this.spaces
     });
     database.history = this.history;
     return database;

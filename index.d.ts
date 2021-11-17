@@ -3,7 +3,6 @@ declare module 'SimpleDatabase' {
 
   interface DatabaseOptions {
     spaces?: number;
-    force?: boolean;
   }
 
   class Database extends EventEmitter {
@@ -21,8 +20,8 @@ declare module 'SimpleDatabase' {
     public find(path: string, fn: (V: any, K: string) => void): any;
     public findAll(path: string, fn: (V: any, K: string) => void): any[];
     public has(path: string): boolean;
-    public get(path: string): any;
     public get(path?: ''): object | any[];
+    public get(path: string): any;
     public entries(): [string, any][];
     public toString(): string;
     public history: (object | any[])[];
