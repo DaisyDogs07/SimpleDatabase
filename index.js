@@ -300,22 +300,23 @@ function typeOf(value) {
 }
 function _delete(path, obj) {
   let locations = path.split('.'),
-    ref = obj;
+    origObj = obj;
   for (let i = 0; i < locations.length - 1; i++) {
-    ref = ref[locations[i]];
+    obj = obj[locations[i]];
+    if (obj === undefined)
+      return origObj;
   }
-  delete ref[locations[locations.length - 1]];
+  delete obj[locations[locations.length - 1]];
   return obj;
 }
 function _set(path, value, obj) {
-  let locations = path.split('.'),
-    ref = obj;
+  let locations = path.split('.');
   for (let i = 0; i < locations.length - 1; i++) {
-    if (ref[locations[i]] === undefined)
-      ref = ref[locations[i]] = {};
-    else ref = ref[locations[i]];
+    if (obj[locations[i]] === undefined)
+      obj = obj[locations[i]] = {};
+    else obj = obj[locations[i]];
   }
-  ref[locations[locations.length - 1]] = value;
+  obj[locations[locations.length - 1]] = value;
   return obj;
 }
 function _get(path, obj) {
