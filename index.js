@@ -20,8 +20,7 @@ class Database extends EventEmitter {
     if (typeOf(options) !== 'an object')
       throw new TypeError('Options must be an object');
     options = Object.assign({
-      spaces: 2,
-      force: false
+      spaces: 2
     }, options);
     if (typeof options.spaces !== 'number')
       throw new TypeError('Spaces option must be a number');
