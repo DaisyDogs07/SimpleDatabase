@@ -20,15 +20,22 @@ class Database extends EventEmitter {
     if (typeOf(options) !== 'an object')
       throw new TypeError('Options must be an object');
     options = Object.assign({
-      spaces: 2
+      spaces: 2,
+      force: false
     }, options);
     if (typeof options.spaces !== 'number')
       throw new TypeError('Spaces option must be a number');
+    if (typeof options.force !== 'boolean')
+      throw new TypeError('Force option must be boolean');
     if (!location || location.endsWith('/'))
       location += 'database.json';
-    if (!location.split('/').pop().includes('.'))
-      location += '.json';
+    if (!options.force) {
+      if (!location.split('/').pop().includes('.'))
+        location += '.json';
+    }
     let loc = location.replace(/\.(\.)?\//g, '').split('.');
+    if (!options.force && loc.length !== 1 && !['json', 'sql'].includes(loc[loc.length - 1]))
+      throw new Error(`File extension '${loc[loc.length - 1]}' is not supported, Please use the 'json' or 'sql' file extension`);
     let dir = location.split('/');
     loc = dir.pop();
     dir = dir.join('/');
@@ -50,6 +57,9 @@ class Database extends EventEmitter {
       spaces: {
         value: Math.min(Math.max(options.spaces, 0), 4), // Confine options.spaces between 0 and 4 (Faster than using ifs)
         writable: true
+      },
+      force: {
+        value: options.force
       }
     });
     fs.writeFileSync(this.filePath, JSON.stringify(this.read(), null, this.spaces));
@@ -155,8 +165,9 @@ class Database extends EventEmitter {
           (typeOf(value) === 'an object' || typeOf(value) === 'an array') &&
           JSON.stringify(v) === JSON.stringify(value))
         return this;
-      let data = _set(path, value, this.read());
-      if (JSON.stringify(this.read()) === JSON.stringify(data))
+      let data = this.read();
+      data = _set(path, value, data);
+      if (JSON.stringify(this.read()) === JSON.stringify(data)) // Returns true in some cases like NaN and Infinity values
         return this;
       this.emit('change', path, this.read(), JSON.parse(JSON.stringify(data)));
       fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
@@ -174,7 +185,8 @@ class Database extends EventEmitter {
       throw new TypeError('Path must be a string');
     if (!this.has(path))
       return this;
-    let data = _delete(path, this.read());
+    let data = this.read();
+    data = _delete(path, data);
     this.emit('change', path, this.read(), JSON.parse(JSON.stringify(data)));
     fs.writeFileSync(this.filePath, JSON.stringify(data, null, this.spaces));
     return this;
@@ -259,7 +271,8 @@ class Database extends EventEmitter {
     if (typeof deleteFile !== 'boolean')
       throw new TypeError('DeleteFile must be boolean');
     const database = new Database(location, {
-      spaces: this.spaces
+      spaces: this.spaces,
+      force: this.force
     });
     fs.writeFileSync(database.filePath, JSON.stringify(this.read(), null, this.spaces));
     if (deleteFile)
@@ -273,7 +286,8 @@ class Database extends EventEmitter {
   }
   clone() {
     const database = new Database(this.filePath, {
-      spaces: this.spaces
+      spaces: this.spaces,
+      force: this.force
     });
     database.history = this.history;
     return database;
@@ -299,23 +313,22 @@ function typeOf(value) {
 }
 function _delete(path, obj) {
   let locations = path.split('.'),
-    origObj = obj;
+    ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
-    obj = obj[locations[i]];
-    if (obj === undefined)
-      return origObj;
+    ref = ref[locations[i]];
   }
-  delete obj[locations[locations.length - 1]];
+  delete ref[locations[locations.length - 1]];
   return obj;
 }
 function _set(path, value, obj) {
-  let locations = path.split('.');
+  let locations = path.split('.'),
+    ref = obj;
   for (let i = 0; i < locations.length - 1; i++) {
-    if (obj[locations[i]] === undefined)
-      obj = obj[locations[i]] = {};
-    else obj = obj[locations[i]];
+    if (ref[locations[i]] === undefined)
+      ref = ref[locations[i]] = {};
+    else ref = ref[locations[i]];
   }
-  obj[locations[locations.length - 1]] = value;
+  ref[locations[locations.length - 1]] = value;
   return obj;
 }
 function _get(path, obj) {
