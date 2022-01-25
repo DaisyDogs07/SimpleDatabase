@@ -39,7 +39,7 @@ class Database extends EventEmitter {
   add(path, amount = 1) {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
-    let v = this.get(path);
+    const v = this.get(path);
     if (typeof v !== 'number')
       throw new TypeError('Path must lead to a number. Received: ' + typeOf(v));
     return this.set(path, v + amount);
@@ -52,7 +52,7 @@ class Database extends EventEmitter {
   sub(path, amount = 1) {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
-    let v = this.get(path);
+    const v = this.get(path);
     if (typeof v !== 'number')
       throw new TypeError('Path must lead to a number. Received: ' + typeOf(v));
     return this.set(path, v - amount);
@@ -180,16 +180,22 @@ function typeOf(value) {
           : type
     );
 }
+const { bind, call } = Function.prototype,
+  uncurryThis = bind.bind(call),
+  hasOwnProperty = uncurryThis(Object.prototype.hasOwnProperty);
 function _delete(path, obj) {
   let locations = path.split('.'),
     key = locations.pop(),
     ref = obj;
   for (const loc of locations) {
+    if (!hasOwnProperty(ref, loc))
+      return obj;
     ref = ref[loc];
     if (typeof ref !== 'object')
       return obj;
   }
-  delete ref[key];
+  if (hasOwnProperty(ref, key))
+    delete ref[key];
   return obj;
 }
 function _set(path, value, obj) {
@@ -197,7 +203,8 @@ function _set(path, value, obj) {
     key = locations.pop(),
     ref = obj;
   for (const loc of locations) {
-    if (typeof ref[loc] !== 'object')
+    if (!hasOwnProperty(ref, loc) ||
+        typeof ref[loc] !== 'object')
       ref = ref[loc] = {};
     else ref = ref[loc];
   }
@@ -208,10 +215,14 @@ function _get(path, obj) {
   const locations = path.split('.'),
     key = locations.pop();
   for (const loc of locations) {
+    if (!hasOwnProperty(obj, loc))
+      return;
     obj = obj[loc];
     if (typeof obj !== 'object')
       return;
   }
+  if (!hasOwnProperty(obj, key))
+    return;
   return obj[key];
 }
 
