@@ -89,10 +89,10 @@ class Database extends EventEmitter {
     if (JSON.stringify({value}) === '{}')
       return this;
     const data = JSON.stringify(_set(path, value, this.read()));
-    if (this.toString() === data)
-      return this;
-    this.emit('change', path, this.read(), JSON.parse(data));
-    fs.writeFileSync(this.#filePath, data);
+    if (this.toString() !== data) {
+      this.emit('change', path, this.read(), JSON.parse(data));
+      fs.writeFileSync(this.#filePath, data);
+    }
     return this;
   }
   /**
