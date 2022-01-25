@@ -69,16 +69,5 @@ const database = new Database();
 #### Reads the JSON Object from the database file
 * **Returns:** The JSON object
 
-### moveTo(location\[, deleteFile\])
-#### Moves the Database to a new file
-* **Location:** The path to the new file
-* **DeleteFile:** Whether to delete the previous file
-* **Returns:** A reference to the Database
-
-### setSpaces(\[amount\])
-#### Sets the amount of spaces the file is formatted with
-* **Amount:** The amount of spaces
-* **Returns:** A reference to the Database
-
 ## Events
 * Change: This event is triggered when the database file is changed by a method.

@@ -1,12 +1,8 @@
 declare module 'SimpleDatabase' {
-  import {EventEmitter} from 'node:events';
-
-  interface DatabaseOptions {
-    spaces?: number;
-  }
+  import {EventEmitter} from 'events';
 
   class Database extends EventEmitter {
-    constructor(location?: string, options?: DatabaseOptions);
+    constructor(location?: string);
 
     public add(path: string, amount?: number): this;
     public sub(path: string, amount?: number): this;
@@ -14,21 +10,14 @@ declare module 'SimpleDatabase' {
     public set(path: '', value: object | any[]): this;
     public delete(path: string): this;
     public clear(): void;
-    public moveTo(location: string, deleteFile?: boolean): this;
-    public setSpaces(amount?: number): this;
 
     public find(path: string, fn: (V: any, K: string) => void): any;
     public findAll(path: string, fn: (V: any, K: string) => void): any[];
     public has(path: string): boolean;
     public get(path?: ''): object | any[];
     public get(path: string): any;
-    public entries(): [string, any][];
     public toString(): string;
-    public history: (object | any[])[];
-    public filePath: string;
-    private read(): object | any[];
-    private spaces: number;
-    private force: boolean;
+    public read(): object | any[];
 
     public on(event: string | symbol, listener: (...args: any[]) => void): this;
     public on(event: 'change', listener: (path: string, oldData: object | any[], newData: object | any[]) => void): this;
@@ -47,8 +36,6 @@ declare module 'SimpleDatabase' {
     public emit(event: 'change', listener: (path: string, oldData: object | any[], newData: object | any[]) => void): boolean;
 
     public clone(): Database;
-
-    public static Database: typeof Database;
   }
   export = Database;
 }
