@@ -15,19 +15,24 @@ class Database extends EventEmitter {
     super();
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
-    if (!location || location.endsWith('/'))
+    if (location.endsWith('/'))
       location += 'database.json';
-    if (!location.endsWith('.json'))
-      location += '.json';
+    location = path.resolve(location);
     let dir = location.split('/');
     const loc = dir.pop();
     dir = dir.join('/');
-    const filePath = `${path.resolve(dir)}/${loc}`;
     if (dir && !fs.existsSync(dir))
-      fs.mkdirSync(dir);
-    if (!fs.existsSync(filePath))
-      fs.writeFileSync(filePath, '{}');
-    this.#filePath = filePath;
+      fs.mkdirSync(dir, {
+        recursive: true
+      });
+    if (!fs.existsSync(location))
+      fs.writeFileSync(location, '{}');
+    else if (fs.statSync(location).isDirectory()) {
+      location += '/database.json';
+      if (!fs.existsSync(location))
+        fs.writeFileSync(location, '{}');
+    }
+    this.#filePath = location;
   }
   #filePath;
   toString() {
