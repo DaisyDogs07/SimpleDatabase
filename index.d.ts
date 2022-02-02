@@ -19,22 +19,6 @@ declare module 'SimpleDatabase' {
     public toString(): string;
     public read(): object | any[];
 
-    public on(event: string | symbol, listener: (...args: any[]) => void): this;
-    public on(event: 'change', listener: (path: string, oldData: object | any[], newData: object | any[]) => void): this;
-    public addListener(event: string | symbol, listener: (...args: any[]) => void): this;
-    public addListener(event: 'change', listener: (path: string, oldData: object | any[], newData: object | any[]) => void): this;
-
-    public off(event: string | symbol, listener: (...args: any[]) => void): this;
-    public off(event: 'change', listener: (path: string, oldData: object | any[], newData: object | any[]) => void): this;
-    public removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
-    public removeListener(event: 'change', listener: (path: string, oldData: object | any[], newData: object | any[]) => void): this;
-
-    public once(event: string | symbol, listener: (...args: any[]) => void): this;
-    public once(event: 'change', listener: (path: string, oldData: object | any[], newData: object | any[]) => void): this;
-
-    public emit(event: string | symbol, listener: (...args: any[]) => void): boolean;
-    public emit(event: 'change', listener: (path: string, oldData: object | any[], newData: object | any[]) => void): boolean;
-
     public clone(): Database;
   }
   export = Database;

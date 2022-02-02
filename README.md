@@ -64,6 +64,3 @@ const database = new Database();
 ### read()
 #### Reads the JSON Object from the database file
 * **Returns:** The JSON object
-
-## Events
-* Change: This event is triggered when the database file is changed by a method.

@@ -1,25 +1,22 @@
 'use strict';
 
 const fs = require('fs'),
-  path = require('path'),
-  {EventEmitter} = require('events');
+  path = require('path');
 
 /**
  * The main Database class for creating a database
  */
-class Database extends EventEmitter {
+class Database {
   /**
    * Makes a new Database. If the file is not present, We'll make it for you
    */
   constructor(location = 'database.json') {
-    super();
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
     if (location.endsWith('/'))
       location += 'database.json';
     location = path.resolve(location);
     let dir = location.split('/');
-    const loc = dir.pop();
     dir = dir.join('/');
     if (dir && !fs.existsSync(dir))
       fs.mkdirSync(dir, {
@@ -85,19 +82,15 @@ class Database extends EventEmitter {
     if (path === '') {
       if (typeof value !== 'object')
         throw new TypeError('Cannot set JSON to ' + typeOf(value));
-      if (this.toString() !== valStr) {
-        this.emit('change', path, this.read(), JSON.parse(valStr));
+      if (this.toString() !== valStr)
         fs.writeFileSync(this.#filePath, valStr);
-      }
       return this;
     }
     if (JSON.stringify({value}) === '{}')
       return this;
     const data = JSON.stringify(_set(path, value, this.read()));
-    if (this.toString() !== data) {
-      this.emit('change', path, this.read(), JSON.parse(data));
+    if (this.toString() !== data)
       fs.writeFileSync(this.#filePath, data);
-    }
     return this;
   }
   /**
@@ -112,7 +105,6 @@ class Database extends EventEmitter {
     if (!this.has(path))
       return this;
     const data = _delete(path, this.read());
-    this.emit('change', path, this.read(), data);
     fs.writeFileSync(this.#filePath, JSON.stringify(data));
     return this;
   }
