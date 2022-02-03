@@ -3,13 +3,7 @@
 const fs = require('fs'),
   path = require('path');
 
-/**
- * The main Database class for creating a database
- */
 class Database {
-  /**
-   * Makes a new Database. If the file is not present, We'll make it for you
-   */
   constructor(location = 'database.json') {
     if (typeof location !== 'string')
       throw new TypeError('Location must be a string');
@@ -35,9 +29,6 @@ class Database {
   toString() {
     return fs.readFileSync(this.#filePath, 'utf8');
   }
-  /**
-   * Adds a specified amount to the JSON key
-   */
   add(path, amount = 1) {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
@@ -46,11 +37,6 @@ class Database {
       throw new TypeError('Path must lead to a number. Received: ' + typeOf(v));
     return this.set(path, v + amount);
   }
-  /**
-   * Subtracts a specified amount to the JSON key
-   * @param {string} Path The path to the JSON key
-   * @param {?number} Amount The amount to subtract
-   */
   sub(path, amount = 1) {
     if (typeof amount !== 'number')
       throw new TypeError('Amount must be a number');
@@ -59,10 +45,6 @@ class Database {
       throw new TypeError('Path must lead to a number. Received: ' + typeOf(v));
     return this.set(path, v - amount);
   }
-  /**
-   * Gets the specified JSON key
-   * @param {?string} Path The path to the JSON key
-   */
   get(path = '') {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
@@ -70,11 +52,6 @@ class Database {
       return this.read();
     return _get(path, this.read());
   }
-  /**
-   * Sets a JSON key to the new value
-   * @param {string} Path the path to the JSON key
-   * @param Value The value to set
-   */
   set(path, value) {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
@@ -93,10 +70,6 @@ class Database {
       fs.writeFileSync(this.#filePath, data);
     return this;
   }
-  /**
-   * Deletes a JSON key
-   * @param {string} Path The path to the JSON key
-   */
   delete(path) {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
@@ -108,11 +81,6 @@ class Database {
     fs.writeFileSync(this.#filePath, JSON.stringify(data));
     return this;
   }
-  /**
-   * Finds a JSON value
-   * @param {string} Path The scope of where to look
-   * @param {Function} fn The function to test with
-   */
   find(path, fn) {
     const obj = this.get(path);
     if (typeof obj !== 'object')
@@ -123,11 +91,6 @@ class Database {
       if (fn(v, k))
         return v;
   }
-  /**
-   * Finds JSON values
-   * @param {string} Path The scope of where to look
-   * @param {Function} fn The function to test with
-   */
   findAll(path, fn) {
     const obj = this.get(path);
     if (typeof obj !== 'object')
@@ -141,16 +104,9 @@ class Database {
     if (arr.length !== 0)
       return arr;
   }
-  /**
-   * Checks if a JSON key exists
-   * @param {string} Path The path to the JSON key
-   */
   has(path) {
     return this.get(path) !== undefined;
   }
-  /**
-   * Reads the JSON Object from the database file
-   */
   read() {
     return JSON.parse(this.toString());
   }
