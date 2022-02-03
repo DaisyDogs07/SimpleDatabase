@@ -172,7 +172,8 @@ function _get(path, obj) {
     if (typeof obj !== 'object')
       return;
   }
-  if (!hasOwnProperty(obj, key))
+  if (typeof obj !== 'object' ||
+      !hasOwnProperty(obj, key))
     return;
   return obj[key];
 }
