@@ -11,6 +11,7 @@ class Database {
       location += 'database.json';
     location = path.resolve(location);
     let dir = location.split('/');
+    dir.pop();
     dir = dir.join('/');
     if (dir && !fs.existsSync(dir))
       fs.mkdirSync(dir, {
@@ -139,11 +140,10 @@ function _delete(path, obj) {
     key = locations.pop(),
     ref = obj;
   for (const loc of locations) {
-    if (!hasOwnProperty(ref, loc))
+    if (!hasOwnProperty(ref, loc) ||
+        typeof ref[loc] !== 'object')
       return obj;
     ref = ref[loc];
-    if (typeof ref !== 'object')
-      return obj;
   }
   if (hasOwnProperty(ref, key))
     delete ref[key];
@@ -166,11 +166,10 @@ function _get(path, obj) {
   const locations = path.split('.'),
     key = locations.pop();
   for (const loc of locations) {
-    if (!hasOwnProperty(obj, loc))
+    if (!hasOwnProperty(obj, loc) ||
+        typeof obj[loc] !== 'object')
       return;
     obj = obj[loc];
-    if (typeof obj !== 'object')
-      return;
   }
   if (typeof obj !== 'object' ||
       !hasOwnProperty(obj, key))
