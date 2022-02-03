@@ -57,8 +57,6 @@ class Database {
       throw new TypeError('Path must be a string');
     const valStr = JSON.stringify(value);
     if (path === '') {
-      if (typeof value !== 'object')
-        throw new TypeError('Cannot set JSON to ' + typeOf(value));
       if (this.toString() !== valStr)
         fs.writeFileSync(this.#filePath, valStr);
       return this;
