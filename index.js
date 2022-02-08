@@ -30,22 +30,6 @@ class Database {
   toString() {
     return fs.readFileSync(this.#filePath, 'utf8');
   }
-  add(path, amount = 1) {
-    if (typeof amount !== 'number')
-      throw new TypeError('Amount must be a number');
-    const v = this.get(path);
-    if (typeof v !== 'number')
-      throw new TypeError('Path must lead to a number. Received: ' + typeOf(v));
-    return this.set(path, v + amount);
-  }
-  sub(path, amount = 1) {
-    if (typeof amount !== 'number')
-      throw new TypeError('Amount must be a number');
-    const v = this.get(path);
-    if (typeof v !== 'number')
-      throw new TypeError('Path must lead to a number. Received: ' + typeOf(v));
-    return this.set(path, v - amount);
-  }
   get(path = '') {
     if (typeof path !== 'string')
       throw new TypeError('Path must be a string');
@@ -59,11 +43,9 @@ class Database {
     const valStr = JSON.stringify(value);
     if (path === '') {
       if (this.toString() !== valStr)
-        fs.writeFileSync(this.#filePath, valStr);
+        fs.writeFileSync(this.#filePath, valStr || '{}');
       return this;
     }
-    if (JSON.stringify({value}) === '{}')
-      return this;
     const data = JSON.stringify(_set(path, value, this.read()));
     if (this.toString() !== data)
       fs.writeFileSync(this.#filePath, data);
@@ -114,24 +96,6 @@ class Database {
   }
 }
 
-function typeOf(value) {
-  const type = typeof value;
-  return (
-    type === 'object'
-      ? value === null
-        ? ''
-        : 'an '
-      : value === undefined || type === 'boolean'
-        ? ''
-        : 'a '
-    ) + (
-      value === null
-        ? value
-        : Array.isArray(value)
-          ? 'array'
-          : type
-    );
-}
 const { bind, call } = Function.prototype,
   uncurryThis = bind.bind(call),
   hasOwnProperty = uncurryThis(Object.prototype.hasOwnProperty);

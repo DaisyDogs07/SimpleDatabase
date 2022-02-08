@@ -16,18 +16,6 @@ const database = new Database();
 * **Location:** The location of the Database file
 
 ## Methods
-### add(path\[, amount\])
-#### Adds a specified amount to the JSON value
-* **Path:** The path to the JSON key
-* **Amount:** The amount to add
-* **Returns:** A reference to the Database
-
-### sub(path\[, amount\])
-#### Subtracts a specified amount to the JSON value
-* **Path:** The path to the JSON key
-* **Amount:** The amount to subtract
-* **Returns:** A reference to the Database
-
 ### set(path\[, value\])
 #### Sets a JSON value to the new value
 * **Path:** the path to the JSON key
